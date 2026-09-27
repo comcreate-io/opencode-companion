@@ -33,7 +33,7 @@ Every row uses the same application APK SHA-256 `bd2f3c0ef2229d4d15579d2d0bbfc58
 
 The host is the pinned official OpenCode 1.18.32 binary in disposable repositories, with a deterministic loopback provider. Instrumentation trusts only the generated fixture certificate and retains hostname verification. The production application still uses system TLS trust. No paid provider, user project, cloud service or remote tunnel was used.
 
-Observed screenshots: [light question/keyboard](light-question-ime.png), [dark question/keyboard](dark-question-ime.png), reading [before](reading-before.png) and [after recreation](reading-after.png). These contain synthetic content only and are evidence for review, not approved phone layouts. At 2× font with an open request and keyboard, older transcript content can yield all its height to the request/composer; request content remains scrollable. This does not prove every orientation or window size.
+Observed screenshots: [light question/keyboard](light-question-ime.png), [dark question/keyboard](dark-question-ime.png), reading [before](reading-before.png) and [after recreation](reading-after.png). These contain synthetic content only and are evidence for review, not approved phone layouts. At 2× font with an open request and keyboard, older transcript content can yield all its height to the request/composer; request content remains scrollable. This does not prove every orientation or window size. The Compose test changes its local theme without changing the Activity/system-bar configuration; the light capture has unreadable status-bar glyphs. These captures do not establish production system-bar appearance.
 
 ## Build and artifact verification
 
