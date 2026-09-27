@@ -1,6 +1,6 @@
 # Architecture — native OpenCode Android client
 
-Status: architecture contract with partial implementation, 2026-09-26. M0 native scaffold and pure send-state rules exist; M1 adds captured-response decoding and SSE framing. The official 1.18.32 binary passed isolated admission/replay and deterministic execution/request probes. A bounded read-only HTTPS transport is verified with local TLS fixtures; persistence, remote auth integration and connected UI remain unimplemented. See [M1 transport evidence](evidence/M1/transport/REPORT.md).
+Status: architecture contract with partial implementation, 2026-09-26. M0 native scaffold and pure send-state rules exist; M1 adds captured-response decoding and SSE framing. The official 1.18.32 binary passed isolated admission/replay and deterministic execution/request probes. A bounded read-only HTTPS transport is verified with local TLS fixtures; Room persistence and Keystore credentials are implemented as local foundations; remote auth integration and connected UI remain unimplemented. See [foundation evidence](evidence/M3/foundations/REPORT.md). See [M1 transport evidence](evidence/M1/transport/REPORT.md).
 
 Read alongside the controlling [delivery plan](../PLAN.md) and [upstream reuse](../UPSTREAM-REUSE.md). Source baseline: OpenCode `b471c2b4495747353af768fbf2e0790c9d820ce2`; a development commit, not the accepted runtime release.
 

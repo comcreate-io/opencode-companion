@@ -1,0 +1,110 @@
+{
+  "data": [
+    {
+      "id": "evt_0e189e1ff0017eggYO4CjOmyhm",
+      "type": "session.next.prompt.admitted",
+      "durable": {
+        "aggregateID": "ses_f1e761e0dffepqwowlRgAWTO0V",
+        "seq": 1,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790490305023,
+        "sessionID": "ses_f1e761e0dffepqwowlRgAWTO0V",
+        "messageID": "msg_072b3aea8e444e1895aef862",
+        "prompt": {
+          "text": "INTERRUPT_CASE"
+        },
+        "delivery": "steer"
+      }
+    },
+    {
+      "id": "evt_0e189e201001v7IOlkq4Fhis2V",
+      "type": "session.next.prompted",
+      "durable": {
+        "aggregateID": "ses_f1e761e0dffepqwowlRgAWTO0V",
+        "seq": 2,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790490305023,
+        "sessionID": "ses_f1e761e0dffepqwowlRgAWTO0V",
+        "messageID": "msg_072b3aea8e444e1895aef862",
+        "prompt": {
+          "text": "INTERRUPT_CASE"
+        },
+        "delivery": "steer"
+      }
+    },
+    {
+      "id": "evt_0e189e250002cFmZV0Tx6BxgC0",
+      "type": "session.next.step.started",
+      "durable": {
+        "aggregateID": "ses_f1e761e0dffepqwowlRgAWTO0V",
+        "seq": 3,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790490305104,
+        "sessionID": "ses_f1e761e0dffepqwowlRgAWTO0V",
+        "assistantMessageID": "msg_0e189e250001RMnPwvcYYlWghf",
+        "agent": "build",
+        "model": {
+          "id": "fixture-model",
+          "providerID": "fixture",
+          "variant": "default"
+        }
+      }
+    },
+    {
+      "id": "evt_0e189e251001m0Dj9y65bOBO0s",
+      "type": "session.next.text.started",
+      "durable": {
+        "aggregateID": "ses_f1e761e0dffepqwowlRgAWTO0V",
+        "seq": 4,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790490305105,
+        "sessionID": "ses_f1e761e0dffepqwowlRgAWTO0V",
+        "assistantMessageID": "msg_0e189e250001RMnPwvcYYlWghf",
+        "textID": "text-0"
+      }
+    },
+    {
+      "id": "evt_0e189e267001fQt6cWOeFIZsH5",
+      "type": "session.next.text.ended",
+      "durable": {
+        "aggregateID": "ses_f1e761e0dffepqwowlRgAWTO0V",
+        "seq": 5,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790490305127,
+        "sessionID": "ses_f1e761e0dffepqwowlRgAWTO0V",
+        "assistantMessageID": "msg_0e189e250001RMnPwvcYYlWghf",
+        "textID": "text-0",
+        "text": "Waiting fixture"
+      }
+    },
+    {
+      "id": "evt_0e189e269001z0LUfTlHtRRuxp",
+      "type": "session.next.step.failed",
+      "durable": {
+        "aggregateID": "ses_f1e761e0dffepqwowlRgAWTO0V",
+        "seq": 6,
+        "version": 2
+      },
+      "data": {
+        "timestamp": 1790490305129,
+        "sessionID": "ses_f1e761e0dffepqwowlRgAWTO0V",
+        "assistantMessageID": "msg_0e189e250001RMnPwvcYYlWghf",
+        "error": {
+          "type": "unknown",
+          "message": "Provider turn interrupted"
+        }
+      }
+    }
+  ],
+  "hasMore": false
+}

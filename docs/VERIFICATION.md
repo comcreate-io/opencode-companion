@@ -66,7 +66,7 @@ Measure before optimizing. If a target is unsuitable, document observed baseline
 
 ## Build and CI contract
 
-M0 established executable commands for formatting, Android Lint, current JVM state tests and debug/unsigned release assembly; the observed command is in README. Database/contract and device tests await their implementation. The debug app installed and cold-launched on the isolated API 36 emulator. Do not count these M0 checks as real-host, lifecycle or beta acceptance.
+M0 established executable commands for formatting, Android Lint, current JVM state tests and debug/unsigned release assembly; the observed command is in README. The [foundation wave](evidence/M3/foundations/REPORT.md) adds real Room/Keystore instrumentation and captured transcript tests; full device flows and migrations across future shipped schemas remain open. The debug app installed and cold-launched on the isolated API 36 emulator. Do not count these M0 checks as real-host, lifecycle or beta acceptance.
 
 Every pull request: formatting/static analysis, affected deterministic tests and debug build. UI changes add Compose/visual evidence. Persistence changes add migration/transaction checks. Protocol changes add pinned real-host smoke evidence. Nightly/scheduled testing is optional future work, not an automation created by this plan.
 

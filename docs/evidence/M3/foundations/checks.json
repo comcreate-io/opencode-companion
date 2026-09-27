@@ -1,0 +1,128 @@
+{
+  "observedDate": "2026-09-27",
+  "sourceBase": "e54a69d46d43e45d1e86132f6b94926ec418d5be",
+  "build": "passed",
+  "command": "nix develop . --command ./gradlew --no-daemon spotlessApply spotlessCheck :protocol:test :client:test :client:lintDebug :client:assembleDebugAndroidTest :app:lintDebug :app:assembleDebug :app:assembleRelease",
+  "localTests": {
+    "total": 51,
+    "suites": [
+      {
+        "name": "dev.local.opencodecompanion.protocol.SseDecoderTest",
+        "tests": "7",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "dev.local.opencodecompanion.protocol.V2RequestCodecTest",
+        "tests": "7",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "dev.local.opencodecompanion.protocol.V2TextEventsTest",
+        "tests": "7",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "dev.local.opencodecompanion.protocol.V2WireCodecTest",
+        "tests": "9",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "dev.local.opencodecompanion.protocol.transcript.V2TranscriptTest",
+        "tests": "6",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "dev.local.opencodecompanion.client.OutgoingIntentTest",
+        "tests": "4",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "dev.local.opencodecompanion.client.ReadOnlyV2TransportTest",
+        "tests": "11",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      }
+    ]
+  },
+  "lint": {
+    "app": {
+      "errors": 0,
+      "warnings": 13,
+      "issueIds": [
+        "AndroidGradlePluginVersion",
+        "GradleDependency",
+        "NewerVersionAvailable"
+      ]
+    },
+    "client": {
+      "errors": 0,
+      "warnings": 0,
+      "issueIds": []
+    }
+  },
+  "instrumentation": {
+    "avd": "OpenCode_M0_API36",
+    "serial": "emulator-5558",
+    "api": 36,
+    "architecture": "x86_64",
+    "targetPackage": "dev.local.opencodecompanion.client.test",
+    "tests": 16,
+    "failures": 0,
+    "cases": [
+      "cancellationBeforeCallerResumesReleasesAcquiredDatabase",
+      "capturedReadTranscriptCommitsAcrossPagesAndSurvivesReopen",
+      "encryptedEnvelopeReopensAndIsExcludedFromBackup",
+      "interruptedAtomicReplacementRestoresBackupBeforeRead",
+      "invalidScopeAndSecretRejectBeforeWriting",
+      "journalAndCursorRollbackTogetherOnConflictAndUnknownEvent",
+      "machineCollisionAndDraftRevisionTombstonePreventOldCleanup",
+      "machineOriginAndGenerationCannotReuseCredential",
+      "missingKeyFailsClosedAndCannotBeRegeneratedOverExistingEnvelope",
+      "preparedDispatchIsSingleUseAndRotationBlocksStaleDestination",
+      "reopenTurnsUncertainDispatchIntoUnknownWithoutResend",
+      "repeatedCloseCannotReleaseAReopenedStore",
+      "rotationAtomicallyReplacesEnvelopeAndDeniesOldScope",
+      "silentFinalizeFailureCannotClaimRotationPersisted",
+      "tamperedCiphertextFailsClosedWithoutCredentialDisclosure",
+      "twoStoreInstancesSerializeCreateAndRotate"
+    ]
+  },
+  "apks": [
+    {
+      "path": "app/build/outputs/apk/debug/app-debug.apk",
+      "sha256": "e8171b6b370f471881d2d4a8db14b1bcdcbe8e97a793eedbff244e63b44392fc"
+    },
+    {
+      "path": "app/build/outputs/apk/release/app-release-unsigned.apk",
+      "sha256": "100da5694aba06d7e40d8bfac442c6448d47d85cb8f264fbdf26e1375f836f1c"
+    },
+    {
+      "path": "client/build/outputs/apk/androidTest/debug/client-debug-androidTest.apk",
+      "sha256": "dbd4a527b2f5f758ffdecc581f7c33df92ae396663e8d0e97f588178cc0d0e41"
+    }
+  ],
+  "notValidated": [
+    "connected Android flow",
+    "physical device",
+    "remote authentication/tunnel",
+    "cross-store rotation coordinator",
+    "process-kill end-to-end",
+    "multi-host network isolation",
+    "future database migrations",
+    "long-history UI",
+    "release distribution"
+  ]
+}
