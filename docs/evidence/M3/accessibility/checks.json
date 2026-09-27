@@ -1,0 +1,141 @@
+{
+  "observed": "2026-09-27",
+  "implementationCommit": "686367d65f4da6744f8988ea60b1bebfce5e620b",
+  "versionName": "0.1.1-dev-candidate",
+  "versionCode": 2,
+  "appApkSha256": "bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9",
+  "testApkSha256": "35a3feee80a09b295271910fba1dd1519ffb4b45abfc148b7d675bfc8511d034",
+  "device": "OpenCode_M0_API36 emulator, API 36",
+  "host": "Official OpenCode 1.18.32; disposable repository; loopback synthetic provider and generated fixture TLS",
+  "sourceExportApkMatches": true,
+  "jvm": {
+    "protocol": 46,
+    "clientDebug": 63,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "lint": {
+    "errors": 0,
+    "appDependencyWarnings": 15,
+    "clientWarnings": 0
+  },
+  "native": [
+    {
+      "suite": "core",
+      "tests": 4,
+      "status": "passed",
+      "output": "core.txt",
+      "target": {
+        "kind": "emulator",
+        "model": "sdk_gphone64_x86_64",
+        "api": 36,
+        "appApkSha256": "bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9",
+        "testApkSha256": "35a3feee80a09b295271910fba1dd1519ffb4b45abfc148b7d675bfc8511d034"
+      }
+    },
+    {
+      "suite": "layout",
+      "tests": 2,
+      "status": "passed",
+      "output": "layout.txt",
+      "target": {
+        "kind": "emulator",
+        "model": "sdk_gphone64_x86_64",
+        "api": 36,
+        "appApkSha256": "bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9",
+        "testApkSha256": "35a3feee80a09b295271910fba1dd1519ffb4b45abfc148b7d675bfc8511d034"
+      }
+    },
+    {
+      "suite": "question",
+      "tests": 2,
+      "status": "passed",
+      "output": "question.txt",
+      "target": {
+        "kind": "emulator",
+        "model": "sdk_gphone64_x86_64",
+        "api": 36,
+        "appApkSha256": "bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9",
+        "testApkSha256": "35a3feee80a09b295271910fba1dd1519ffb4b45abfc148b7d675bfc8511d034"
+      }
+    },
+    {
+      "suite": "twohost",
+      "tests": 1,
+      "status": "passed",
+      "output": "twohost.txt",
+      "target": {
+        "kind": "emulator",
+        "model": "sdk_gphone64_x86_64",
+        "api": 36,
+        "appApkSha256": "bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9",
+        "testApkSha256": "35a3feee80a09b295271910fba1dd1519ffb4b45abfc148b7d675bfc8511d034"
+      }
+    },
+    {
+      "suite": "process",
+      "tests": 2,
+      "status": "passed",
+      "output": "process.txt",
+      "target": {
+        "kind": "emulator",
+        "model": "sdk_gphone64_x86_64",
+        "api": 36,
+        "appApkSha256": "bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9",
+        "testApkSha256": "35a3feee80a09b295271910fba1dd1519ffb4b45abfc148b7d675bfc8511d034"
+      }
+    },
+    {
+      "suite": "credential",
+      "tests": 1,
+      "status": "passed",
+      "output": "credential.txt",
+      "target": {
+        "kind": "emulator",
+        "model": "sdk_gphone64_x86_64",
+        "api": 36,
+        "appApkSha256": "bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9",
+        "testApkSha256": "35a3feee80a09b295271910fba1dd1519ffb4b45abfc148b7d675bfc8511d034"
+      }
+    },
+    {
+      "suite": "permission",
+      "tests": 1,
+      "status": "passed",
+      "output": "permission.txt",
+      "target": {
+        "kind": "emulator",
+        "model": "sdk_gphone64_x86_64",
+        "api": 36,
+        "appApkSha256": "bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9",
+        "testApkSha256": "35a3feee80a09b295271910fba1dd1519ffb4b45abfc148b7d675bfc8511d034"
+      }
+    },
+    {
+      "suite": "contrast",
+      "tests": 1,
+      "status": "passed",
+      "output": "contrast.txt",
+      "target": {
+        "kind": "emulator",
+        "model": "sdk_gphone64_x86_64",
+        "api": 36,
+        "appApkSha256": "bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9",
+        "testApkSha256": "35a3feee80a09b295271910fba1dd1519ffb4b45abfc148b7d675bfc8511d034"
+      }
+    }
+  ],
+  "nativeTotal": 14,
+  "physicalCurrentArtifact": "not run; Pixel locked; historical 0.1.0 results are separate",
+  "unverified": [
+    "actual HTTPS host/tunnel",
+    "paid-provider execution",
+    "Wi-Fi/cellular recovery",
+    "manual TalkBack",
+    "Pixel 0.1.1",
+    "phone-layout acceptance",
+    "all API levels/orientations",
+    "expanded tool state across recreation"
+  ]
+}
