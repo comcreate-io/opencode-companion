@@ -1,0 +1,431 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "5dab3ed359deb138eca6cb066eb469a8",
+    "entities": [
+      {
+        "tableName": "machines",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`machineId` TEXT NOT NULL, `displayName` TEXT NOT NULL, `origin` TEXT NOT NULL, `credentialReference` TEXT, `credentialGeneration` INTEGER NOT NULL, `sharedPasswordAcknowledged` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`machineId`))",
+        "fields": [
+          {
+            "fieldPath": "machineId",
+            "columnName": "machineId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayName",
+            "columnName": "displayName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "origin",
+            "columnName": "origin",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "credentialReference",
+            "columnName": "credentialReference",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "credentialGeneration",
+            "columnName": "credentialGeneration",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sharedPasswordAcknowledged",
+            "columnName": "sharedPasswordAcknowledged",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "machineId"
+          ]
+        }
+      },
+      {
+        "tableName": "drafts",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`machineId` TEXT NOT NULL, `projectId` TEXT NOT NULL, `location` TEXT NOT NULL, `sessionId` TEXT NOT NULL, `revision` INTEGER NOT NULL, `text` TEXT NOT NULL, `cleared` INTEGER NOT NULL, PRIMARY KEY(`machineId`, `projectId`, `location`, `sessionId`))",
+        "fields": [
+          {
+            "fieldPath": "machineId",
+            "columnName": "machineId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "projectId",
+            "columnName": "projectId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "location",
+            "columnName": "location",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sessionId",
+            "columnName": "sessionId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "revision",
+            "columnName": "revision",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "text",
+            "columnName": "text",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cleared",
+            "columnName": "cleared",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "machineId",
+            "projectId",
+            "location",
+            "sessionId"
+          ]
+        }
+      },
+      {
+        "tableName": "outgoing",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`machineId` TEXT NOT NULL, `intentId` TEXT NOT NULL, `projectId` TEXT NOT NULL, `location` TEXT NOT NULL, `sessionId` TEXT NOT NULL, `credentialGeneration` INTEGER NOT NULL, `origin` TEXT NOT NULL, `promptText` TEXT NOT NULL, `state` TEXT NOT NULL, `delivery` TEXT, `draftProjectId` TEXT, `draftLocation` TEXT, `draftSessionId` TEXT, `draftRevision` INTEGER, PRIMARY KEY(`machineId`, `intentId`))",
+        "fields": [
+          {
+            "fieldPath": "machineId",
+            "columnName": "machineId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "intentId",
+            "columnName": "intentId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "projectId",
+            "columnName": "projectId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "location",
+            "columnName": "location",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sessionId",
+            "columnName": "sessionId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "credentialGeneration",
+            "columnName": "credentialGeneration",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "origin",
+            "columnName": "origin",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "promptText",
+            "columnName": "promptText",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "state",
+            "columnName": "state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "delivery",
+            "columnName": "delivery",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "draftProjectId",
+            "columnName": "draftProjectId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "draftLocation",
+            "columnName": "draftLocation",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "draftSessionId",
+            "columnName": "draftSessionId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "draftRevision",
+            "columnName": "draftRevision",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "machineId",
+            "intentId"
+          ]
+        }
+      },
+      {
+        "tableName": "event_journal",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`machineId` TEXT NOT NULL, `sessionId` TEXT NOT NULL, `sequence` INTEGER NOT NULL, `eventId` TEXT NOT NULL, `rawJson` TEXT NOT NULL, PRIMARY KEY(`machineId`, `sessionId`, `sequence`))",
+        "fields": [
+          {
+            "fieldPath": "machineId",
+            "columnName": "machineId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sessionId",
+            "columnName": "sessionId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sequence",
+            "columnName": "sequence",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eventId",
+            "columnName": "eventId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rawJson",
+            "columnName": "rawJson",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "machineId",
+            "sessionId",
+            "sequence"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_event_journal_machineId_sessionId_eventId",
+            "unique": true,
+            "columnNames": [
+              "machineId",
+              "sessionId",
+              "eventId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_event_journal_machineId_sessionId_eventId` ON `${TABLE_NAME}` (`machineId`, `sessionId`, `eventId`)"
+          }
+        ]
+      },
+      {
+        "tableName": "durable_cursor",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`machineId` TEXT NOT NULL, `sessionId` TEXT NOT NULL, `sequence` INTEGER NOT NULL, PRIMARY KEY(`machineId`, `sessionId`))",
+        "fields": [
+          {
+            "fieldPath": "machineId",
+            "columnName": "machineId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sessionId",
+            "columnName": "sessionId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sequence",
+            "columnName": "sequence",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "machineId",
+            "sessionId"
+          ]
+        }
+      },
+      {
+        "tableName": "session_summaries",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`machineId` TEXT NOT NULL, `origin` TEXT NOT NULL, `credentialGeneration` INTEGER NOT NULL, `sessionId` TEXT NOT NULL, `projectId` TEXT NOT NULL, `directory` TEXT NOT NULL, `workspaceId` TEXT, `subpath` TEXT, `title` TEXT NOT NULL, `created` INTEGER NOT NULL, `updated` INTEGER NOT NULL, PRIMARY KEY(`machineId`, `origin`, `credentialGeneration`, `sessionId`))",
+        "fields": [
+          {
+            "fieldPath": "machineId",
+            "columnName": "machineId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "origin",
+            "columnName": "origin",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "credentialGeneration",
+            "columnName": "credentialGeneration",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sessionId",
+            "columnName": "sessionId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "projectId",
+            "columnName": "projectId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "directory",
+            "columnName": "directory",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "workspaceId",
+            "columnName": "workspaceId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "subpath",
+            "columnName": "subpath",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "created",
+            "columnName": "created",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updated",
+            "columnName": "updated",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "machineId",
+            "origin",
+            "credentialGeneration",
+            "sessionId"
+          ]
+        }
+      },
+      {
+        "tableName": "pending_rotations",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`machineId` TEXT NOT NULL, `oldOrigin` TEXT NOT NULL, `oldGeneration` INTEGER NOT NULL, `oldReference` TEXT NOT NULL, `newOrigin` TEXT NOT NULL, `newGeneration` INTEGER NOT NULL, `newReference` TEXT NOT NULL, PRIMARY KEY(`machineId`))",
+        "fields": [
+          {
+            "fieldPath": "machineId",
+            "columnName": "machineId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "oldOrigin",
+            "columnName": "oldOrigin",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "oldGeneration",
+            "columnName": "oldGeneration",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "oldReference",
+            "columnName": "oldReference",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "newOrigin",
+            "columnName": "newOrigin",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "newGeneration",
+            "columnName": "newGeneration",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "newReference",
+            "columnName": "newReference",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "machineId"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5dab3ed359deb138eca6cb066eb469a8')"
+    ]
+  }
+}

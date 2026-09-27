@@ -1,0 +1,30 @@
+[
+  {
+    "file": "after.txt",
+    "patch": "diff --git a/after.txt b/after.txt\nnew file mode 100644\nindex 0000000..3d70483\n--- /dev/null\n+++ b/after.txt\n@@ -0,0 +1 @@\n+unchanged rename content\n",
+    "additions": 1,
+    "deletions": 0,
+    "status": "added"
+  },
+  {
+    "file": "before.txt",
+    "patch": "diff --git a/before.txt b/before.txt\ndeleted file mode 100644\nindex 3d70483..0000000\n--- a/before.txt\n+++ /dev/null\n@@ -1 +0,0 @@\n-unchanged rename content\n",
+    "additions": 0,
+    "deletions": 1,
+    "status": "deleted"
+  },
+  {
+    "file": "binary.dat",
+    "patch": "diff --git a/binary.dat b/binary.dat\nindex 2157e99..a14783b 100644\nBinary files a/binary.dat and b/binary.dat differ\n",
+    "additions": 0,
+    "deletions": 0,
+    "status": "modified"
+  },
+  {
+    "file": "delete.txt",
+    "patch": "diff --git a/delete.txt b/delete.txt\ndeleted file mode 100644\nindex 16e1875..0000000\n--- a/delete.txt\n+++ /dev/null\n@@ -1 +0,0 @@\n-delete fixture\n",
+    "additions": 0,
+    "deletions": 1,
+    "status": "deleted"
+  }
+]

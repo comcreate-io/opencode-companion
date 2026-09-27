@@ -4,13 +4,13 @@ Execution baseline: 2026-09-27, following merged PR #1. [PLAN.md](../PLAN.md) ow
 
 ## Starting point
 
-Verified: native debug visual proof, build/CI, machine-scoped wire types, strict JSON/SSE framing, text reconciliation, pending-request codecs, read-only HTTPS transport, and isolated real OpenCode admission/execution/request probes. The baseline has 45 JVM tests. Release remains disconnected; no remote capabilities are enabled.
+Implemented: connected screens, manual HTTPS setup, Room/Keystore state, scoped drafts/intents, recovery, transport, requests/changes and same-origin password replacement. Delivered in [PR #4](https://github.com/comcreate-io/opencode-companion/pull/4); source `10901c0` passed [source CI](https://github.com/comcreate-io/opencode-companion/actions/runs/36338767704). All 109 JVM tests passed. All 25 Room/Keystore platform tests passed on emulator and Pixel 8 Pro (Android 16 / API 36). The clean APK passed eight native emulator checks: three core, one two-host, two process-recovery stages, one credential-update and one permission scenario. Fresh source-archive assembly reproduced that APK byte-for-byte with the same tools/debug key; Pixel installation hash read-back matched. [Connected evidence](evidence/M3/connected/REPORT.md) and [candidate handoff](TESTING.md) own run and artifact details. Full Pixel UI awaits unlock; actual-host/tunnel, paid-provider, Wi-Fi/cellular, TalkBack and layout acceptance remain open. Current review/check status lives on the PR.
 
 First usable milestone: configure one protected host, open a real disposable project/session, send one prompt, see text and tool output, respond to a request, interrupt, and reopen the app without losing a draft or resending an uncertain command. Machine identity remains part of every key even before a second host is exposed in the UI.
 
 ## Workstreams and dependencies
 
-| Stream | Concrete remaining work | Depends on | Acceptance |
+| Stream | Boundary and required work (status below) | Depends on | Required acceptance |
 |---|---|---|---|
 | A1 · Durable storage | Room schema, host metadata, revisioned drafts, persisted outgoing intents, atomic event journal/cursor, reopen recovery | Existing identity/send rules | Actual SQLite tests: two-machine collisions; draft revision race; dispatch crash becomes unknown; transaction rollback; no duplicate dispatch |
 | A2 · Credentials | Keystore AES-GCM envelopes, no-backup storage, exact origin/generation binding, rotation/deletion/error handling | Android client library setup from A1 | Actual Android tests: reopen/decrypt; tamper/missing key; wrong machine/origin/generation denied; old generation denied after rotation |
@@ -35,18 +35,18 @@ flowchart LR
   C1 --> Device
 ```
 
-## Current parallel wave
+## Current integration status
 
-A1, A2 and A3 are implemented with reviewed regression fixes; [foundation evidence](evidence/M3/foundations/REPORT.md) records their checks and limits. They were developed independently with explicit file ownership. A1 owns the Android client-library build conversion and database/schema files; A2 owns `client/security`; A3 owns `protocol/transcript`. Build-file changes are coordinated through A1. The integration owner maintains this map, checks contracts and runs combined verification. A separate review pass checks the completed boundaries with OpenCodeReview. B1 session commands and streams are implemented with [runtime and review evidence](evidence/M1/session-transport/REPORT.md). The [transport brief](SESSION_TRANSPORT.md) records route evidence, mutation outcomes and stream acceptance cases. B2 recovery coordination and native integration follow.
+A1–A3 foundations, B1 transport, B2 coordination and B3 native integration are implemented. C1 request/changes controls and C2 manual HTTPS setup plus same-origin password replacement are present; these rows describe boundaries and required acceptance, not completed milestones. Historical reports remain [foundations](evidence/M3/foundations/REPORT.md) and [session transport](evidence/M1/session-transport/REPORT.md). The clean debug candidate is packaged; source CI, archive reproducibility, installation hash read-back and all eight native emulator checks passed. Current review/check status lives on [PR #4](https://github.com/comcreate-io/opencode-companion/pull/4). Integrated observations belong in the [connected report](evidence/M3/connected/REPORT.md). Final Pixel UI, layout and remote-access acceptance remain open.
 
-The journal validates and projects the supported durable event bodies before committing the complete batch and cursor in one transaction. B2 will coordinate history/live ordering and publish only committed state. Transient overlays never supply a durable cursor. Reconstructing a transcript from the journal is distinct from persisting a future materialized projection.
+The journal validates and projects the supported durable event bodies before committing the complete batch and cursor in one transaction. B2 coordinates history/live ordering and publishes committed state; the full fault matrix still requires recorded acceptance. Transient overlays never supply a durable cursor. Reconstructing a transcript from the journal is distinct from persisting a future materialized projection.
 
-Profiles store only a credential reference. A2 binds the actual credential to normalized origin and generation. Cross-store rotation cannot be falsely described as one SQLite transaction: if interrupted, the coordinator must fail closed and reconcile profile/credential metadata before dispatch. No replacement origin inherits credentials automatically.
+Profiles store only a credential reference. A2 binds the actual credential to normalized origin and generation. MachineCredentialRotation uses a pending profile record and vault reconciliation across interruption; it is not one cross-store SQLite transaction. Ambiguous vault state fails closed until an app restart rechecks it. Replacement preserves drafts/journal and is blocked by unresolved sends. Ready still requires authenticated exact-version verification; a saved password alone is not proof of access. No replacement origin inherits credentials automatically.
 
 ## Decisions that remain with Carter
 
-- **D04:** shared OpenCode password over HTTPS with whole-credential rotation for the personal beta, or an additional access layer for per-device revocation. Implementation of local storage/codecs does not depend on this answer; enabling remote writes does.
-- **D06:** physical Android phone and OS version for acceptance. Emulator evidence is useful but does not close the device gate.
+- **D04:** shared-password HTTPS is the implemented testing-candidate mode with explicit per-machine acknowledgement. Acceptance for Carter's actual hosts remains pending. The same-origin Update password UI is implemented, with local rotation platform and native checks passing; actual-host rotation acceptance remains open. Unresolved sends block replacement, and revocation that prevents their reconciliation requires manual recovery. Per-device revocation requires another proven access boundary.
+- **D06:** Pixel 8 Pro, Android 16 / API 36 is identified and passed all 25 platform tests. Final native UI testing awaits phone unlock; Wi-Fi/cellular, TalkBack and layout acceptance remain open.
 - **M2:** acceptance of the concrete phone layouts, including keyboard and large-text states. The OpenCode V2 design direction is already settled.
 
 No automatic cloud provisioning, provider-key management, iOS work or hosted relay enters these streams. Those remain deferred by the plan.

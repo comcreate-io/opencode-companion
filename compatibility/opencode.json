@@ -1,21 +1,46 @@
 {
   "schemaVersion": 1,
-  "status": "runtime-spike-validated-subset",
+  "status": "internal-android-candidate",
   "researchCommit": "b471c2b4495747353af768fbf2e0790c9d820ce2",
-  "supportedReleases": [],
-  "enabledRemoteCapabilities": [],
+  "supportedReleases": [
+    "1.18.32"
+  ],
+  "enabledRemoteCapabilities": [
+    "manual-authenticated-https",
+    "session-list-create-read",
+    "model-agent-selection",
+    "text-prompt-admission",
+    "durable-session-replay",
+    "transient-text-stream",
+    "interrupt",
+    "permission-once-reject",
+    "question-answer-reject",
+    "bounded-git-diff"
+  ],
   "testedBuilds": [
     {
       "version": "1.18.32",
       "platform": "linux-x64",
       "distribution": "official GitHub release",
       "binarySha256": "513f500a1a5ea1dc7d865547ac87b32a8936334e8d5abd5b3ff585c45a170080",
-      "scope": "loopback admission/replay, deterministic execution, pending requests and basic Git diff probes; not supported for app connections",
+      "scope": "Official Linux x64 runtime against native Android via disposable authenticated HTTPS fixtures; production routes and paid model providers remain operator acceptance gates",
       "evidence": "docs/evidence/M1/run-3/results.json",
       "additionalEvidence": [
         "docs/evidence/M1/execution/run-8/results.json",
-        "docs/evidence/M1/permissions/run-2/results.json"
+        "docs/evidence/M1/permissions/run-2/results.json",
+        "docs/evidence/M1/session-transport/REPORT.md",
+        "docs/evidence/M3/connected/REPORT.md",
+        "docs/evidence/M4/changes/REPORT.md"
       ]
     }
+  ],
+  "constraints": [
+    "Exact version gate; no fallback to other releases",
+    "System-trusted HTTPS root origin and shared server password with explicit per-machine acknowledgement",
+    "No browser-based Cloudflare Access or service-token header integration",
+    "No automatic retry of uncertain mutations",
+    "No per-device revocation; unresolved sends block local credential replacement",
+    "Bounded durable transcript; unsupported state-changing events fail closed",
+    "No file attachments, slash commands, arbitrary file browser, terminal, cloud provisioning or iOS"
   ]
 }

@@ -66,6 +66,27 @@ class SessionV2Transport private constructor(baseClient: OkHttpClient) {
 
     internal fun runningCallsForTests(): Int = client.dispatcher.runningCallsCount()
 
+    /** Supported release gate, separate from validating individual V2 endpoint shapes. */
+    suspend fun compatibility(destination: ReadDestination): ReadResult<ScopedValue<String>> {
+        val result =
+            read(
+                destination,
+                destination.origin.newBuilder().addPathSegments("global/health").build(),
+            ) {
+                dev.local.opencodecompanion.protocol.HostVersionCodec.decode(it)
+            }
+        return when (result) {
+            is ReadResult.Failure -> result
+            is ReadResult.Success ->
+                if (
+                    result.value.value ==
+                        dev.local.opencodecompanion.protocol.HostVersionCodec.SUPPORTED_VERSION
+                )
+                    result
+                else ReadResult.Failure(ReadFailure.UnsupportedVersion)
+        }
+    }
+
     suspend fun session(
         destination: ReadDestination,
         key: SessionKey,
@@ -73,6 +94,31 @@ class SessionV2Transport private constructor(baseClient: OkHttpClient) {
         if (!validKey(destination, key)) return ReadResult.Failure(ReadFailure.DecodeFailure)
         return read(destination, sessionUrl(destination, key)) { body ->
             V2WireCodec.session(body).also { require(it.id == key.sessionId) }
+        }
+    }
+
+    /** Legacy working-tree read scoped to the selected session's explicit directory. */
+    suspend fun changes(
+        destination: ReadDestination,
+        key: SessionKey,
+        directory: String,
+    ): ReadResult<ScopedValue<List<dev.local.opencodecompanion.protocol.VcsFileDiff>>> {
+        if (!validKey(destination, key)) return ReadResult.Failure(ReadFailure.DecodeFailure)
+        try {
+            dev.local.opencodecompanion.protocol.VcsDiffCodec.directory(directory)
+        } catch (_: V2WireException) {
+            return ReadResult.Failure(ReadFailure.DecodeFailure)
+        }
+        return read(
+            destination,
+            destination.origin
+                .newBuilder()
+                .addPathSegments("vcs/diff")
+                .addQueryParameter("mode", "git")
+                .addQueryParameter("directory", directory)
+                .build(),
+        ) { body ->
+            dev.local.opencodecompanion.protocol.VcsDiffCodec.decode(body)
         }
     }
 

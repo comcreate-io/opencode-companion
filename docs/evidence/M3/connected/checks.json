@@ -1,0 +1,37 @@
+{
+  "sourceCommit": "10901c0d13e756cb1abdfc20eddea41857a4f417",
+  "protocolTests": 46,
+  "clientJvmTests": 63,
+  "failures": 0,
+  "skipped": 0,
+  "platformTests": {
+    "emulatorApi36": 25,
+    "pixel8ProApi36": 25
+  },
+  "emulatorNative": {
+    "core": 3,
+    "twoHost": 1,
+    "processRecovery": 2,
+    "credentialReplacement": 1,
+    "permissionReply": 1
+  },
+  "pixelNative": "pending unlocked device",
+  "appLintErrors": 0,
+  "appLintDependencyWarnings": 15,
+  "clientLintIssues": 0,
+  "builds": [
+    "debug",
+    "unsigned release",
+    "client Android tests",
+    "app Android tests"
+  ],
+  "apkSha256": "92aeb5ba58b5fdd355b4131e07a1cc7af3996786d03a5881aa7e16d42f166c31",
+  "cleanSourceExport": {
+    "passed": true,
+    "commit": "10901c0d13e756cb1abdfc20eddea41857a4f417",
+    "matchesCleanWorkspaceApk": true
+  },
+  "pixelInstalledApkVerified": true,
+  "emulatorNativeArtifactVerified": true,
+  "sourceCi": "https://github.com/comcreate-io/opencode-companion/actions/runs/36338767704"
+}

@@ -1,6 +1,7 @@
 package dev.local.opencodecompanion.protocol.transcript
 
 import dev.local.opencodecompanion.protocol.SessionKey
+import dev.local.opencodecompanion.protocol.V2PromptAdmission
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
@@ -280,6 +281,21 @@ data class DurableTranscriptEvent(
             version == other.version &&
             kind == other.kind &&
             raw == other.raw
+
+    /** Only a validated admission event proves correlation for an uncertain local send. */
+    fun promptAdmission(): V2PromptAdmission? {
+        val prompt = kind as? Kind.Prompt ?: return null
+        if (prompt.prompted) return null
+        val timestamp = (raw["timestamp"] as? JsonPrimitive)?.longOrNull ?: return null
+        return V2PromptAdmission(
+            prompt.messageId,
+            session.sessionId,
+            sequence,
+            prompt.delivery,
+            prompt.text,
+            timestamp,
+        )
+    }
 }
 
 data class TranscriptError(val type: String, val message: String)

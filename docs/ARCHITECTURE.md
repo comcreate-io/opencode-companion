@@ -1,6 +1,6 @@
 # Architecture — native OpenCode Android client
 
-Status: architecture contract with partial implementation, 2026-09-26. M0 native scaffold and pure send-state rules exist; M1 adds captured-response decoding and SSE framing. The official 1.18.32 binary passed isolated admission/replay and deterministic execution/request probes. A bounded read-only HTTPS transport is verified with local TLS fixtures; Room persistence and Keystore credentials are implemented as local foundations; remote auth integration and connected UI remain unimplemented. See [foundation evidence](evidence/M3/foundations/REPORT.md). See [M1 transport evidence](evidence/M1/transport/REPORT.md).
+Status: connected candidate implementation, 2026-09-27, delivered in [PR #4](https://github.com/comcreate-io/opencode-companion/pull/4). Source `10901c0` passed [source CI](https://github.com/comcreate-io/opencode-companion/actions/runs/36338767704). Room/Keystore, transport, coordination, native screens and same-origin credential replacement are implemented. 109 JVM tests, 25 platform cases on emulator and Pixel 8 Pro Android 16/API 36, and all eight native emulator checks on the clean APK passed. Clean source-archive reproducibility and Pixel installation hash read-back passed. [Connected evidence](evidence/M3/connected/REPORT.md) owns exact runs and artifact identity; current review/check status lives on the PR. Full Pixel UI awaits unlock; actual-host/tunnel, paid-provider, network, TalkBack and layout acceptance remain open.
 
 Read alongside the controlling [delivery plan](../PLAN.md) and [upstream reuse](../UPSTREAM-REUSE.md). Source baseline: OpenCode `b471c2b4495747353af768fbf2e0790c9d820ce2`; a development commit, not the accepted runtime release.
 
@@ -45,11 +45,11 @@ Feature packages: connections, projects/sessions, conversation/composer, permiss
 
 ## V2 adapter contract
 
-Paths below originated in pinned source research. The admission/replay subset was subsequently verified against official 1.18.32; see [M1 evidence](evidence/M1/REPORT.md) for the exact observed subset. Health returns only healthy:true, and unknown API GETs can return HTML with status 200. Neither health nor status establishes compatibility. Remote capabilities remain disabled.
+Paths below originated in pinned source research and are refined by official 1.18.32 runtime evidence. The connected adapter reads legacy `/global/health` for `healthy` and the exact version, then uses the supported V2 contract. `/api/health` alone returns only health; unknown API GETs can return HTML with status 200. Neither a successful status nor reachability establishes compatibility. Unknown/different versions and invalid responses fail closed; credentials remain bound to the confirmed HTTPS origin.
 
 | Operation | Pinned contract / source path under `references/opencode/` |
 |---|---|
-| Compatibility probe | `/api/health`; `packages/app/src/utils/server-protocol.ts`. Probe failure remains unknown/unreachable; do not copy its V2 fallback |
+| Compatibility probe | `GET /global/health` reports health/version in the pinned runtime; require exactly `1.18.32`. `/api/health` alone cannot admit a connection. No V2 fallback on probe failure |
 | List/create/read sessions | `GET/POST /api/session`, `GET /api/session/:sessionID`; `packages/protocol/src/groups/session.ts` |
 | Read run status | `GET /api/session/active`; same source. Reports execution owned by the current process, not job durability across restart |
 | Send prompt | `POST /api/session/:sessionID/prompt`; same source. Optional message ID and `SessionInput.Admitted` response; idempotency is unproven |
@@ -59,7 +59,7 @@ Paths below originated in pinned source research. The admission/replay subset wa
 | Pending permissions and reply | `GET /api/session/:sessionID/permission`, `POST /api/session/:sessionID/permission/:requestID/reply`; `packages/protocol/src/groups/permission.ts` |
 | Interrupt | `POST /api/session/:sessionID/interrupt`; session group. Acceptance is not proof the host finished stopping |
 
-Project/location discovery, changed-file/diff APIs, model/agent selection, pending questions/replies and file-reference encoding must be mapped in M1 before those beta capabilities are enabled. Image attachment encoding is deferred with image attachments. Do not invent routes or silently substitute local file reads. Health/version fields and an explicit supported release matrix also need confirmation; do not assume an upstream capability-negotiation endpoint exists.
+Session creation, model/agent catalogs, pending questions/replies and bounded changes reads are mapped in the implemented transport; see [session transport evidence](evidence/M1/session-transport/REPORT.md). The connected UI integrates these boundaries, but their full native acceptance matrix remains open. Do not infer complete project/workspace discovery or file-reference support from session listing; enable only observed operations. Image attachments remain deferred. The exact-version gate is a local supported-release policy, not an invented upstream capability-negotiation endpoint.
 
 ## Synchronization and replay
 
@@ -106,6 +106,8 @@ Disable backup of device credentials and sensitive local app data by default; do
 Use typed failures: `TransportUnavailable`, `TlsRejected`, `AuthenticationRequired`, `CredentialRevoked`, `ProtocolUnsupported`, `RateLimited`, `Conflict`, `RequestGone`, `OutcomeUnknown`, `StorageFailure`, `DecodeFailure`. Present actionable messages with redacted diagnostic IDs; do not expose raw server bodies or credentials. Retry safe reads selectively, honor server retry guidance where present, and never apply a universal retry interceptor to mutations.
 
 ## Connection and authentication decision gate
+
+The candidate implements manual HTTPS Basic authentication with explicit per-machine shared-password acknowledgement and Keystore-backed storage. Synthetic-host acknowledgement is not acceptance of this limitation for Carter's actual hosts. The same-origin Update password UI uses MachineCredentialRotation: record a pending profile transition, replace the vault credential and reconcile metadata after interruption. This preserves machine identity, drafts and journal; unresolved sends block replacement. Ambiguous vault startup state fails closed until an app restart rechecks it. Local replacement is not proof the host accepts the password; Ready requires authenticated exact-version verification. Five credential-rotation platform cases are included in the 25 passing platform tests; the native credential-update scenario passed on the clean APK. Actual-host rotation acceptance remains open. If an already revoked credential prevents unresolved-send reconciliation, preserve the blocked intent and inspect the host directly; this candidate requires manual recovery and provides no automatic override/retry. See [host setup](HOST_SETUP.md).
 
 Required before enabling remote writes: authenticated TLS, explicit origin/host confirmation, secret redaction, protected upstream access, and a tested access boundary. Per-device revocation and a restricted route surface are the target. Under PLAN D04, Carter may explicitly accept a trusted-owner MVP with a shared server credential, whole-credential rotation/re-pair and the broader authenticated OpenCode API surface documented. That is a recorded scope limitation, never implied per-device revocation or isolation. Without that decision or the target controls, the remote gate remains blocked. No public unauthenticated fallback, disabled TLS validation or credentials in query strings.
 

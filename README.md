@@ -2,7 +2,7 @@
 
 A native Android app for working with OpenCode on your own computers. Kotlin and Jetpack Compose, with OpenCode V2's UI/UX adapted for a phone.
 
-**Current state:** M0 Android scaffold and a debug-only synthetic visual proof. Local formatting, state tests, Android lint and debug/unsigned release assembly passed in the pinned Nix shell. The debug APK installed and launched on an isolated API 36 emulator; a clean source export also built successfully. Phone-layout acceptance remains pending. Isolated real-host admission, replay, execution, request and basic diff probes pass; the Android app has no live connection, published release or provisioned service. Room persistence, Keystore credentials, durable transcript replay and session command/stream transport are implemented; see [foundation evidence](docs/evidence/M3/foundations/REPORT.md). The product name is a working description.
+**Current state:** connected Android testing candidate delivered in [PR #4](https://github.com/comcreate-io/opencode-companion/pull/4). Implementation source `10901c0` passed [source CI](https://github.com/comcreate-io/opencode-companion/actions/runs/36338767704); current review/check status lives on the PR. All 109 JVM tests passed. All 25 Room/Keystore platform tests passed on emulator and Pixel 8 Pro (Android 16 / API 36). The clean APK passed eight native emulator checks: three core, one two-host, two process-recovery stages, one credential-update and one permission scenario. Fresh source-archive assembly reproduced that APK byte-for-byte with the same tools/debug key; Pixel installation hash read-back matched. See [Testing handoff](docs/TESTING.md) for installation and artifact identity, and [connected evidence](docs/evidence/M3/connected/REPORT.md) for exact runs. Full Pixel UI awaits unlock. Actual-host/tunnel, paid-provider, Wi-Fi/cellular, TalkBack and phone-layout acceptance remain open. The app requires exactly OpenCode 1.18.32 and explicit shared-password acknowledgement per machine; no service was provisioned.
 
 ## Read the project
 
@@ -12,6 +12,8 @@ A native Android app for working with OpenCode on your own computers. Kotlin and
 | [Remaining build map](docs/BUILD_MAP.md) | Parallel workstreams, dependencies and the first usable beta gate |
 | [Architecture](docs/ARCHITECTURE.md) | Module boundaries, state, transport, persistence and trust model |
 | [UX specification](docs/UX.md) | Screen map, source fidelity, interactions and visual acceptance |
+| [Testing handoff](docs/TESTING.md) | Candidate artifact, installation, checks and recovery limits |
+| [Host setup](docs/HOST_SETUP.md) | Candidate host configuration, security limits and pending remote acceptance |
 | [Verification](docs/VERIFICATION.md) | Failure scenarios, quality checks and release evidence |
 | [AGENTS.md](AGENTS.md) | Rules for writing, reviewing and maintaining this codebase |
 | [Contributing](CONTRIBUTING.md) | Build checks and pull request expectations |
@@ -36,7 +38,7 @@ The project uses a checked-in Gradle wrapper and the pinned Nix development shel
 nix develop . --command ./gradlew --no-daemon spotlessCheck :protocol:test :client:test :client:lintDebug :client:assembleDebugAndroidTest :app:lintDebug :app:assembleDebug :app:assembleRelease
 ```
 
-The JVM suites cover client send-state rules, protocol JSON/SSE boundaries and read-only HTTPS transport, including captured 1.18.32 responses. See the [session transport report](docs/evidence/M1/session-transport/REPORT.md) for current local checks and the [foundation report](docs/evidence/M3/foundations/REPORT.md) for platform checks. `:app:assembleRelease` produces an unsigned, disconnected shell, not a distributable release. The prior baseline passed in [remote CI for PR #1](https://github.com/comcreate-io/opencode-companion/actions/runs/36327268835). See [M0 evidence](docs/evidence/M0/REPORT.md) for observed commands and remaining gates. `./scripts/emulator.sh` booted the isolated API 36 emulator from the dev shell; APK install and cold launch passed.
+The JVM suites cover protocol boundaries, persistence-independent send/recovery rules and HTTPS transport. Historical boundary checks remain in the [session transport report](docs/evidence/M1/session-transport/REPORT.md) and [foundation report](docs/evidence/M3/foundations/REPORT.md); current integrated results belong in the [connected report](docs/evidence/M3/connected/REPORT.md). Release source now uses the connected app, but unsigned release assembly is not a signed or accepted distributable. The combined command above is the verification contract, not a claim that every final check has completed on the current revision. The same-origin “Update password” flow preserves local history/drafts and blocks replacement while sends are unresolved; local rotation platform and native checks passed; actual-host rotation acceptance remains open. See [host setup](docs/HOST_SETUP.md).
 
 `references/opencode/` and `references/t3code/` are local research checkouts, not application modules or build dependencies. Preserve their pinned contents. Reference commits and source links are recorded in [UPSTREAM-REUSE.md](UPSTREAM-REUSE.md).
 
