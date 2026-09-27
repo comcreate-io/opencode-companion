@@ -1,6 +1,6 @@
 # Android toolchain
 
-M0 local build checks, clean source-export assembly and emulator APK install/launch passed in the pinned shell. See the [M0 evidence report](evidence/M0/REPORT.md) for observed results. The CI workflow is configured but has not run remotely.
+M0 local build checks, clean source-export assembly and emulator APK install/launch passed in the pinned shell. See the [M0 evidence report](evidence/M0/REPORT.md) for observed results. The CI workflow passed remotely on PR #1 before merge.
 
 | Input | Pin |
 |---|---|
@@ -24,11 +24,11 @@ The `.envrc` uses `use flake`; the project has its own Git root. Run commands fr
 
 The wrapper JAR checksum is stored in `gradle/wrapper/gradle-wrapper.jar.sha256`; the distribution checksum is in `gradle-wrapper.properties`. Dependencies/plugins are pinned in `gradle/libs.versions.toml`. No Android SDK download is delegated to an imperative global installer.
 
-`:protocol` and `:client` are JVM modules in M0 because their current types/rules need no Android APIs. The client will become an Android library when platform storage/credential adapters arrive; do not add that dependency before it is used.
+`:protocol` remains a JVM module. `:client` is now an Android library because its Room database and Android Keystore adapters need platform APIs. Its existing pure state/HTTP tests run as local Android unit tests; the storage and credential suites require instrumentation. Room 2.8.5 generates schema version 1 through KSP 2.3.12. The KSP version supports AGP 9 built-in Kotlin; no source-set compatibility bypass is enabled.
 
 Development package ID is `dev.local.opencodecompanion.debug`; it is temporary and separate from a future distribution identity. Debug sources contain explicit synthetic UI fixtures. Release sources open a disconnected shell, without sample conversations or an active transport. No release signing key is configured.
 
-Run the verified local build checks from the repository root with `nix develop . --command ./gradlew --no-daemon spotlessCheck :protocol:test :client:test :app:lintDebug :app:assembleDebug :app:assembleRelease`. The original M0 check had four client tests and no protocol test sources; [M1 execution evidence](evidence/M1/execution/REPORT.md) records the expanded 34-test baseline. The emulator booted through `nix develop . --command ./scripts/emulator.sh`; installation and cold app launch passed on emulator-5558. The Android UI remains disconnected; no OpenCode release is yet enabled for app connections.
+Run the verified local build checks from the repository root with `nix develop . --command ./gradlew --no-daemon spotlessCheck :protocol:test :client:test :client:lintDebug :client:assembleDebugAndroidTest :app:lintDebug :app:assembleDebug :app:assembleRelease`. The original M0 check had four client tests and no protocol test sources; [M1 execution evidence](evidence/M1/execution/REPORT.md) records the expanded 34-test baseline. The emulator booted through `nix develop . --command ./scripts/emulator.sh`; installation and cold app launch passed on emulator-5558. The Android UI remains disconnected; no OpenCode release is yet enabled for app connections.
 
 ## Sources checked during setup
 
@@ -42,3 +42,5 @@ Backup exclusions cover all documented storage domains for cloud and device tran
 M1 adds Nix `python3` (observed 3.14.6) for the standard-library protocol probe and kotlinx.serialization-json 1.9.0 for strict Kotlin wire parsing. Runtime evidence: [M1 report](evidence/M1/REPORT.md).
 
 M1 read-only HTTP uses OkHttp 5.3.2 and kotlinx.coroutines 1.10.2; matching MockWebServer/TLS fixtures are test-only. [Transport evidence](evidence/M1/transport/REPORT.md) records the final 45-test build and remaining device gates.
+
+The [foundation report](evidence/M3/foundations/REPORT.md) supersedes earlier test counts and documents the isolated library instrumentation target. Dependency pins: Room 2.8.5, KSP 2.3.12, AndroidX Test runner 1.7.0 and extension JUnit 1.3.0. Room supplies the real SQLite transaction boundary; KSP generates its DAO/schema; the Android test dependencies are test-only.
