@@ -1,0 +1,32 @@
+{
+  "location": {
+    "directory": "/fixture/repo",
+    "project": {
+      "id": "b7884a630dcbf8e39fac2c894a5c312d74dd4f10",
+      "directory": "/fixture/repo"
+    }
+  },
+  "data": [
+    {
+      "id": "fixture-model",
+      "providerID": "fixture",
+      "name": "Fixture",
+      "capabilities": {
+        "tools": true,
+        "input": [],
+        "output": []
+      },
+      "variants": [],
+      "time": {
+        "released": 0
+      },
+      "cost": [],
+      "status": "active",
+      "enabled": true,
+      "limit": {
+        "context": 8192,
+        "output": 2048
+      }
+    }
+  ]
+}

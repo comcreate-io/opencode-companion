@@ -1,6 +1,6 @@
 # Next implementation wave: session transport
 
-B1 in the [build map](BUILD_MAP.md). This is an implementation brief, not enabled capability. It follows the pinned source and OpenCode 1.18.32 runtime evidence; unsupported cases remain explicit.
+B1 in the [build map](BUILD_MAP.md). Implemented with [verification evidence](evidence/M1/session-transport/REPORT.md); this brief records the boundaries, not enabled remote capability. It follows the pinned source and OpenCode 1.18.32 runtime evidence; unsupported cases remain explicit.
 
 ## Ownership and boundaries
 

@@ -1,0 +1,53 @@
+{
+  "binarySha256": "513f500a1a5ea1dc7d865547ac87b32a8936334e8d5abd5b3ff585c45a170080",
+  "cases": [
+    {
+      "case": "explicit loopback provider verified before execution",
+      "status": "pass"
+    },
+    {
+      "case": "agent catalog, deep-object location and explicit session identity",
+      "status": "pass"
+    },
+    {
+      "case": "real agent execution with deterministic streamed model output",
+      "status": "pass"
+    },
+    {
+      "case": "transient deltas match durable final text; repeated history excludes deltas",
+      "status": "pass"
+    },
+    {
+      "case": "read tool executes only against disposable fixture file",
+      "status": "pass"
+    },
+    {
+      "case": "complete tool replay crosses into live durable text without gaps",
+      "status": "pass"
+    },
+    {
+      "case": "question exact-session reply and stale duplicate rejection",
+      "status": "pass"
+    },
+    {
+      "case": "question reject is acknowledged, removed and stale duplicate denied",
+      "status": "pass"
+    },
+    {
+      "case": "interrupt active model stream and observe idle host state",
+      "status": "pass"
+    },
+    {
+      "case": "combined server read-only VCS diff: empty and modified fixture",
+      "status": "pass"
+    }
+  ],
+  "provider": "deterministic loopback HTTP fixture",
+  "paidModelCalls": false,
+  "notRun": [
+    "TLS",
+    "Android transport",
+    "binary/large/no-Git diff cases",
+    "physical device"
+  ]
+}

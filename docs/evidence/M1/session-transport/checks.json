@@ -1,0 +1,96 @@
+{
+  "observedDate": "2026-09-27",
+  "sourceBase": "f9b793768371a437355421ef57325dd957b9feb8",
+  "build": "passed",
+  "command": "nix develop . --command ./gradlew --no-daemon spotlessApply spotlessCheck :protocol:test :client:test :client:lintDebug :client:assembleDebugAndroidTest :app:lintDebug :app:assembleDebug :app:assembleRelease",
+  "localTests": [
+    {
+      "name": "dev.local.opencodecompanion.protocol.SseDecoderTest",
+      "tests": "7",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "dev.local.opencodecompanion.protocol.V2RequestCodecTest",
+      "tests": "7",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "dev.local.opencodecompanion.protocol.V2SessionTransportCodecTest",
+      "tests": "7",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "dev.local.opencodecompanion.protocol.V2TextEventsTest",
+      "tests": "7",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "dev.local.opencodecompanion.protocol.V2WireCodecTest",
+      "tests": "9",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "dev.local.opencodecompanion.protocol.transcript.V2TranscriptTest",
+      "tests": "6",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "dev.local.opencodecompanion.client.OutgoingIntentTest",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "dev.local.opencodecompanion.client.ReadOnlyV2TransportTest",
+      "tests": "11",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "dev.local.opencodecompanion.client.SessionV2StreamsTest",
+      "tests": "10",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "dev.local.opencodecompanion.client.SessionV2TransportTest",
+      "tests": "9",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    }
+  ],
+  "totalTests": 77,
+  "lint": {
+    "app": {
+      "Error": 0,
+      "Warning": 13
+    },
+    "client": {
+      "Error": 0,
+      "Warning": 0
+    }
+  },
+  "runtimeProbeGroups": 10,
+  "pythonChecks": "Pinned Ruff F,E9 passed; updated script completed real isolated run3",
+  "platformTests": "Not rerun in this transport-only change; 16 foundation instrumentation tests remain earlier evidence, testAPK recompiles",
+  "apks": {
+    "app/build/outputs/apk/debug/app-debug.apk": "0f8dd3c31f41b6c53e8a3bf799d8ff6167196389ae27fb43d9fd02d3349b3fb3",
+    "app/build/outputs/apk/release/app-release-unsigned.apk": "f65d621e2a616b21de292b23498cbb333b778b943b855bd15056f5bf5ebb9b66"
+  }
+}

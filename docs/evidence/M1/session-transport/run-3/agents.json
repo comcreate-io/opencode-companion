@@ -1,0 +1,50 @@
+{
+  "location": {
+    "directory": "/fixture/repo",
+    "project": {
+      "id": "b7884a630dcbf8e39fac2c894a5c312d74dd4f10",
+      "directory": "/fixture/repo"
+    }
+  },
+  "data": [
+    {
+      "id": "build",
+      "description": "The default agent. Executes tools based on configured permissions.",
+      "mode": "primary",
+      "hidden": false
+    },
+    {
+      "id": "plan",
+      "description": "Plan mode. Disallows all edit tools.",
+      "mode": "primary",
+      "hidden": false
+    },
+    {
+      "id": "general",
+      "description": "General-purpose agent for researching complex questions and executing multi-step tasks. Use this agent to execute multiple units of work in parallel.",
+      "mode": "subagent",
+      "hidden": false
+    },
+    {
+      "id": "explore",
+      "description": "Fast agent specialized for exploring codebases. Use this when you need to quickly find files by patterns (eg. \"src/components/**/*.tsx\"), search code for keywords (eg. \"API endpoints\"), or answer questions about the codebase (eg. \"how do API endpoints work?\"). When calling this agent, specify the desired thoroughness level: \"quick\" for basic searches, \"medium\" for moderate exploration, or \"very thorough\" for comprehensive analysis across multiple locations and naming conventions.",
+      "mode": "subagent",
+      "hidden": false
+    },
+    {
+      "id": "compaction",
+      "mode": "primary",
+      "hidden": true
+    },
+    {
+      "id": "title",
+      "mode": "primary",
+      "hidden": true
+    },
+    {
+      "id": "summary",
+      "mode": "primary",
+      "hidden": true
+    }
+  ]
+}
