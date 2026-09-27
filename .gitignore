@@ -1,0 +1,15 @@
+/.gradle/
+/.kotlin/
+/.direnv/
+/.android-local/
+**/build/
+/local.properties
+/references/
+/result
+/result-*
+*.jks
+*.keystore
+.env
+.env.*
+!.envrc
+.idea/
