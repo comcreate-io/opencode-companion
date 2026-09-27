@@ -13,7 +13,7 @@ Implementation commit: `10901c0d13e756cb1abdfc20eddea41857a4f417`. [Machine-read
 
 Screenshots are observed emulator output, not approved phone layouts: [read and draft](read-draft.png), [question](question.png), [changes](changes.png).
 
-Implementation-head [CI passed](https://github.com/comcreate-io/opencode-companion/actions/runs/36338767704). Local clean checks used `./gradlew --no-daemon :app:clean :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest :app:lintDebug` in the project Nix shell. The fresh source export used `:app:assembleDebug`. Native scenarios use `scripts/run-connected-tests.py` and the disposable host fixture; reproduction commands are in the repository README.
+Implementation-head [CI passed](https://github.com/comcreate-io/opencode-companion/actions/runs/36338767704). Local clean checks used `./gradlew --no-daemon :app:clean :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest :app:lintDebug` in the project Nix shell. The fresh source export used `:app:assembleDebug`. Native scenarios use `scripts/android-host-fixture.py` with the verified OpenCode binary, followed by `scripts/run-connected-tests.py` with its private ready file and an unused output directory. Run each script with `--help` for required arguments and the separate two-host, process-recovery, credential and permission modes. Use the project Nix shell for the runner so ADB is available; keep ready files and generated credentials in ignored local storage.
 
 ## Boundaries
 
