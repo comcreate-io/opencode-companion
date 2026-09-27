@@ -5,9 +5,12 @@ import android.view.inputmethod.InputMethodManager
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import dev.local.opencodecompanion.MainActivity
+import dev.local.opencodecompanion.client.session.ConnectionState
 import dev.local.opencodecompanion.protocol.transcript.Kind
 import java.io.File
 import org.junit.Assert.assertEquals
@@ -39,6 +42,18 @@ class ConnectedHostTest {
                 .getSystemService(InputMethodManager::class.java)
                 .hideSoftInputFromWindow(compose.activity.window.decorView.windowToken, 0)
         }
+        compose.waitUntil(10_000) {
+            var hidden = false
+            compose.runOnUiThread {
+                val insets = ViewCompat.getRootWindowInsets(compose.activity.window.decorView)
+                hidden =
+                    insets != null &&
+                        !insets.isVisible(WindowInsetsCompat.Type.ime()) &&
+                        insets.getInsets(WindowInsetsCompat.Type.ime()).bottom == 0
+            }
+            hidden
+        }
+        compose.waitForIdle()
     }
 
     private fun awaitText(text: String, timeout: Long = 30_000, substring: Boolean = false) {
@@ -51,20 +66,37 @@ class ConnectedHostTest {
     }
 
     private fun setup(name: String) {
+        val model = ViewModelProvider(compose.activity)[ConnectedViewModel::class.java]
+        val origin = requireNotNull(args.getString("fixtureOrigin"))
         compose
             .onNodeWithTag("machine-list")
             .performScrollToNode(hasContentDescription("Machine name"))
         compose.onNodeWithContentDescription("Machine name").performTextInput(name)
-        compose
-            .onNodeWithContentDescription("https://host.example")
-            .performTextInput(requireNotNull(args.getString("fixtureOrigin")))
+        compose.onNodeWithContentDescription("https://host.example").performTextInput(origin)
         compose
             .onNodeWithContentDescription("Server password")
             .performTextInput(requireNotNull(args.getString("fixturePassword")))
         closeSoftKeyboard()
-        compose.onNodeWithText(" I understand and accept").performScrollTo().performClick()
-        compose.onNodeWithText("Save machine").performScrollTo().performClick()
-        awaitText("Ready · host current")
+        compose
+            .onNodeWithText(" I understand and accept")
+            .performScrollTo()
+            .assertIsOff()
+            .performClick()
+            .assertIsOn()
+        val existingMachineIds = model.state.value.machines.map { it.id }.toSet()
+        compose.onNodeWithText("Save machine").performScrollTo().assertIsEnabled().performClick()
+        // An older selected machine may already be Ready; require this save's new identity.
+        compose.waitUntil(30_000) {
+            val state = model.state.value
+            val created =
+                state.machines.singleOrNull {
+                    it.id !in existingMachineIds && it.displayName == name && it.origin == origin
+                }
+            created != null &&
+                state.selectedMachine == created.id &&
+                state.connection == ConnectionState.Ready
+        }
+        compose.onNodeWithText("Ready · host current").assertExists()
         compose
             .onNodeWithTag("machine-list")
             .performScrollToNode(hasText(name) and hasClickAction() and hasSetTextAction().not())
