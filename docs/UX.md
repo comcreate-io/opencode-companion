@@ -50,6 +50,10 @@ Use the pinned explicit light/dark V2 theme blocks. Preserve layered neutral bac
 | Primary text | `#161616` | `#FAFAFA` |
 | Accent background | `#3B5CF6` | `#3B5CF6` |
 
+Native accessibility adaptations preserve the V2 palette hierarchy while raising normal-size text to the project's 4.5:1 contrast target. The Android faint foreground uses `#6B6B6B` in light mode and `#999999` in dark mode; light success text uses `#187C3C`, and light warning text uses `#856515`. Other pinned palette values remain unchanged. `ThemeContrastTest` checks the actual foreground/surface pairs in both themes, including hints, status, warnings and active buttons.
+
+The composer scrolls internally after four visible lines and is capped at 120dp; its full draft remains intact. With a request pending, the conversation body reserves a scrollable request area of 96–240dp, clamped to the space left above the composer. This keeps request actions reachable with enlarged text and an open keyboard; it is not a promise for every screen/font configuration. Button roles, selected catalog choices and tool disclosure states are exposed in accessibility semantics.
+
 Inter is the upstream sans direction; verify the font's distribution license before bundling. Use a legible monospace for code. Match relative hierarchy, not desktop CSS pixels: text must scale with Android settings. Do not ship the source's tiny desktop hit areas. Project target: 48dp minimum interactive bounds, with smaller glyphs allowed inside.
 
 Motion is short and purposeful: disclosure, sheet/navigation transitions and status changes. Use the approved fast-in/soft-out easing where appropriate, respect reduced motion and avoid pulsing/shimmering across a whole transcript. V2 has pending-tool shimmer; port only a restrained treatment and provide a static equivalent.
