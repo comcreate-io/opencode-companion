@@ -42,6 +42,7 @@ class PermissionReplyTest {
             .performClick()
         compose.onNodeWithTag("session-list").assertExists()
         awaitText("Ready · host current")
+        compose.onNodeWithTag("session-list").performScrollToNode(hasTestTag("session:$sessionId"))
         compose.waitUntil(30_000) {
             compose.onAllNodesWithTag("session:$sessionId").fetchSemanticsNodes().isNotEmpty()
         }

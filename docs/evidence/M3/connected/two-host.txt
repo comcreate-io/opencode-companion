@@ -15,7 +15,7 @@ INSTRUMENTATION_STATUS: test=identicalSessionIdsKeepDraftsOnTheirOwnMachines
 INSTRUMENTATION_STATUS_CODE: 0
 INSTRUMENTATION_RESULT: stream=
 
-Time: 61.21
+Time: 61.404
 
 OK (1 test)
 

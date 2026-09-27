@@ -1,6 +1,6 @@
 # Candidate host setup
 
-Candidate walkthrough, 2026-09-27. Manual HTTPS setup and per-machine shared-password acknowledgement are implemented; unknown/different host builds fail closed. Interim native/platform checks are passing, while final suites are still running; see the forthcoming [connected report](evidence/M3/connected/REPORT.md). This is for a trusted owner testing against a disposable Linux/NixOS host workspace. It does not provision a tunnel or establish production acceptance. Candidate APK link, checksum and signing identity: **pending the candidate handoff**; do not substitute an older foundation APK.
+Candidate walkthrough, 2026-09-27. Manual HTTPS setup and per-machine shared-password acknowledgement are implemented; unknown/different host builds fail closed. The clean candidate passed emulator native and emulator/Pixel platform checks; full Pixel UI acceptance remains open; see the [connected report](evidence/M3/connected/REPORT.md). This is for a trusted owner testing against a disposable Linux/NixOS host workspace. It does not provision a tunnel or establish production acceptance. The [testing handoff](TESTING.md) identifies the candidate APK, checksum and signing identity; do not substitute an older foundation APK.
 
 ## Before connecting
 

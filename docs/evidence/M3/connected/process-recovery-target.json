@@ -1,0 +1,7 @@
+{
+  "kind": "emulator",
+  "model": "sdk_gphone64_x86_64",
+  "api": 36,
+  "appApkSha256": "92aeb5ba58b5fdd355b4131e07a1cc7af3996786d03a5881aa7e16d42f166c31",
+  "testApkSha256": "d5a52f019d7b4e0406aaaf4c18e826bce77572449a92140456f09dcf57d4e3b5"
+}

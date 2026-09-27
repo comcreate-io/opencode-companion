@@ -80,6 +80,7 @@ class ProcessRecoveryTest {
     }
 
     private fun openSession(session: String) {
+        compose.onNodeWithTag("session-list").performScrollToNode(hasTestTag("session:$session"))
         compose.waitUntil(30_000) {
             compose.onAllNodesWithTag("session:$session").fetchSemanticsNodes().isNotEmpty()
         }

@@ -73,6 +73,9 @@ class TwoHostTest {
     }
 
     private fun openSession(machineName: String, sharedSession: String) {
+        compose
+            .onNodeWithTag("session-list")
+            .performScrollToNode(hasTestTag("session:$sharedSession"))
         compose.onNodeWithTag("session-list").assertExists()
         compose.waitUntil(30_000) {
             compose

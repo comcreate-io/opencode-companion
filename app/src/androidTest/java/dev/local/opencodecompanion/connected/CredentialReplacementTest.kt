@@ -4,6 +4,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -15,6 +16,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.test.platform.app.InstrumentationRegistry
 import dev.local.opencodecompanion.MainActivity
@@ -104,6 +106,7 @@ class CredentialReplacementTest {
     }
 
     private fun openSession(sessionId: String) {
+        compose.onNodeWithTag("session-list").performScrollToNode(hasTestTag("session:$sessionId"))
         compose.waitUntil(30_000) {
             compose.onAllNodesWithTag("session:$sessionId").fetchSemanticsNodes().isNotEmpty()
         }

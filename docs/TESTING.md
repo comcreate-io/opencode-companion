@@ -6,15 +6,15 @@ This candidate connects to your OpenCode host. Start with a disposable project a
 
 | Item | Candidate |
 |---|---|
-| Local APK | `.android-local/candidate/opencode-companion-0.1.0-candidate.apk` (handoff artifact forthcoming) |
+| Local APK | `.android-local/candidate/opencode-companion-0.1.0-candidate.apk` |
 | Package | `dev.local.opencodecompanion.debug` |
 | Version | `0.1.0-dev-candidate`, version code `1` |
 | Android minimum | Android 9 / API 28 |
-| Source commit | **Pending final handoff** |
-| APK SHA-256 | **Pending final handoff** |
-| Debug signing certificate SHA-256 | **Pending final handoff** |
+| Implementation commit | [`10901c0`](https://github.com/comcreate-io/opencode-companion/commit/10901c0d13e756cb1abdfc20eddea41857a4f417) |
+| APK SHA-256 | `92aeb5ba58b5fdd355b4131e07a1cc7af3996786d03a5881aa7e16d42f166c31` |
+| Debug signing certificate SHA-256 | `580fa46f785a93d6df37ead6796ae4c58cc92ca020f2419110b4e05f1285d886` |
 
-The handoff owner must fill the commit and fingerprints for this exact APK before it is treated as the final candidate. Release signing and distribution are not established; unsigned release assembly is a build check, not an installable release.
+Release signing and distribution are not established; unsigned release assembly is a build check, not an installable release.
 
 ## Install or update
 
@@ -25,7 +25,7 @@ adb devices -l
 adb -s YOUR_DEVICE_SERIAL install -r .android-local/candidate/opencode-companion-0.1.0-candidate.apk
 ```
 
-Replace `YOUR_DEVICE_SERIAL` with that device's serial. `install -r` updates a matching package/signature while retaining app data. If Android reports a signing mismatch, stop; do not uninstall just to make installation succeed. Open **OpenCode companion** on the phone and confirm the installed package/version if another build is present.
+Replace `YOUR_DEVICE_SERIAL` with that device's serial. `install -r` updates a matching package/signature while retaining app data. If Android reports a signing mismatch, stop; do not uninstall just to make installation succeed. Open **OpenCode Companion** on the phone and confirm the installed package/version if another build is present.
 
 Uninstalling or clearing app data loses local drafts and pending intent records. Do not do either while a send has an unknown outcome. This candidate uses database schema 2: an older schema-1 APK is not a safe rollback. Do not downgrade or use `adb install -d`; fix forward with a compatible build. Keep the existing data until its recovery is understood.
 
@@ -33,10 +33,10 @@ Uninstalling or clearing app data loses local drafts and pending intent records.
 
 The [connected evidence report](evidence/M3/connected/REPORT.md) owns exact revisions, commands and artifacts. Current observations supplied for this handoff:
 
-- Build18 passed 109 JVM tests: 46 protocol and 63 client. Debug, unsigned release and Android instrumentation APKs assembled. Following the build19 `snapshotFlow` fix, lint reported no errors and 15 dependency warnings. Do not infer that a build18 result covers later source edits without the final report's checks.
+- Implementation commit `10901c0` passed CI and 109 JVM tests: 46 protocol and 63 client. Debug, unsigned release and Android instrumentation APKs assembled. Lint reported no errors and 15 dependency-update warnings. A fresh source export and clean workspace build produced the identical APK listed above.
 - All 25 Room/Keystore platform tests passed on the isolated emulator and Carter's Pixel 8 Pro running Android 16 / API 36.
 - Emulator native runs passed three core scenarios, one two-host scenario, two process-restart instrumentation stages, one credential-update scenario and one permission scenario. Process recovery includes durable draft and credential reuse.
-- Final Pixel native UI testing is still running at this document's baseline. Platform database/Keystore success alone does not establish its connected UI acceptance.
+- The exact candidate APK is installed on the Pixel; its installed APK checksum matches the handoff. Native interruption passed on an earlier build before the phone auto-locked. Full physical UI testing remains pending an unlocked device; database/Keystore success alone does not establish connected UI acceptance.
 
 These results do not establish a named tunnel, your remote model/provider path, cellular recovery, accessibility or all supported Android versions. The final artifact record must say which checks apply to its source revision.
 

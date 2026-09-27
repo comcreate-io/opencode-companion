@@ -1,0 +1,2 @@
+PASS Pixel 8 Pro installed candidate package dev.local.opencodecompanion.debug
+APK SHA-256 92aeb5ba58b5fdd355b4131e07a1cc7af3996786d03a5881aa7e16d42f166c31

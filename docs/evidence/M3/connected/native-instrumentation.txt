@@ -43,7 +43,7 @@ INSTRUMENTATION_STATUS: test=questionReplyUsesRealPendingRequest
 INSTRUMENTATION_STATUS_CODE: 0
 INSTRUMENTATION_RESULT: stream=
 
-Time: 95.791
+Time: 95.413
 
 OK (3 tests)
 

@@ -15,7 +15,7 @@ INSTRUMENTATION_STATUS: test=allowOnceClearsRealPendingRequestAndKeepsConnection
 INSTRUMENTATION_STATUS_CODE: 0
 INSTRUMENTATION_RESULT: stream=
 
-Time: 19.968
+Time: 19.588
 
 OK (1 test)
 
