@@ -1,12 +1,12 @@
 # Verification and release evidence
 
-Status: test plan with partial M0 local evidence. Formatting, four client state tests, Android lint and debug/unsigned release assembly passed in the pinned shell; M1 subsequently added protocol codec/SSE tests and real-host admission/replay, execution, request and basic diff probes; read-only HTTPS tests now cover authentication, redirects, bounds and cancellation; see [M1 transport evidence](evidence/M1/transport/REPORT.md). Emulator boot, debug APK install/cold launch and clean source-export assembly passed. See [M0 evidence](evidence/M0/REPORT.md). Requirement IDs come from [PLAN.md](../PLAN.md). The architecture defines behavior; this document defines how to prove it.
+Status: verification contract with versioned execution evidence. Current 0.1.1 source `686367d65f4da6744f8988ea60b1bebfce5e620b` passed the final build, 109 JVM tests and lint (zero errors, 15 dependency warnings); source-export assembly was byte-identical. All 14 native emulator checks passed; the linked report defines the suite and artifact. [Accessibility evidence](evidence/M3/accessibility/REPORT.md) records this wave. [Connected evidence](evidence/M3/connected/REPORT.md) records the older 0.1.0 APK's 25 platform and eight native checks on Pixel API 36. Those physical results do not apply automatically to 0.1.1. The locked phone, host/disposable path and temporary TalkBack choices remain pending; actual-host/network/provider/TalkBack/layout acceptance is unverified. [Testing handoff](TESTING.md) owns the current artifact identity. Requirement IDs come from [PLAN.md](../PLAN.md); the architecture defines behavior and this document defines how to prove it.
 
 ## Evidence format
 
 For each executed scenario record: requirement/case ID, app commit/build variant, device model/API, OpenCode release/commit, auth/transport mode, fixture revision, preconditions, action, expected/observed outcome and artifact path. Redact credentials, prompts from real work and repository contents. Use disposable repositories with recognizable synthetic markers.
 
-Proposed output location: `docs/evidence/<milestone>/<run-id>/`. Save concise results and relevant screenshots/log excerpts. A status is `not-run`, `pass`, `fail` or `blocked` with its reason. CI green does not replace device/remote-path evidence.
+Evidence output location: `docs/evidence/<milestone>/<run-id>/`. Save concise results and relevant screenshots/log excerpts. A status is `not-run`, `pass`, `fail` or `blocked` with its reason. CI green does not replace device/remote-path evidence.
 
 ## Automated layers
 
@@ -66,7 +66,7 @@ Measure before optimizing. If a target is unsuitable, document observed baseline
 
 ## Build and CI contract
 
-M0 established executable commands for formatting, Android Lint, current JVM state tests and debug/unsigned release assembly; the observed command is in README. The [foundation wave](evidence/M3/foundations/REPORT.md) adds real Room/Keystore instrumentation and captured transcript tests; full device flows and migrations across future shipped schemas remain open. The debug app installed and cold-launched on the isolated API 36 emulator. Do not count these M0 checks as real-host, lifecycle or beta acceptance.
+Established commands cover formatting, Android Lint, protocol/client JVM tests, assembly and instrumentation. [README](../README.md) lists the development commands; exact observed revision/variant/device results belong in the versioned reports. The [foundation report](evidence/M3/foundations/REPORT.md), historical [connected report](evidence/M3/connected/REPORT.md) and current [accessibility report](evidence/M3/accessibility/REPORT.md) have distinct scopes. New UI semantics, contrast and large-font tests do not prove native TalkBack usability; physical and real-network acceptance must be recorded separately. Do not treat an old green run as evidence for a new APK.
 
 Every pull request: formatting/static analysis, affected deterministic tests and debug build. UI changes add Compose/visual evidence. Persistence changes add migration/transaction checks. Protocol changes add pinned real-host smoke evidence. Nightly/scheduled testing is optional future work, not an automation created by this plan.
 

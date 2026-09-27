@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -36,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.withFrameNanos
@@ -47,7 +49,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -87,11 +91,10 @@ fun ConnectedScreen(viewModel: ConnectedViewModel, modifier: Modifier = Modifier
     val notice by viewModel.notice.collectAsStateWithLifecycle()
     var page by remember { mutableStateOf(Page.Machines) }
     val conversationScroll = rememberLazyListState()
-    var following by remember { mutableStateOf(true) }
+    var following by rememberSaveable(state.selectedSession) { mutableStateOf(true) }
     LaunchedEffect(state.selectedSession) {
         if (state.selectedSession != null) {
             page = Page.Conversation
-            following = true
         }
     }
     BackHandler(page != Page.Machines) {
@@ -465,21 +468,21 @@ private fun NewSessionPage(
     ) {
         item("heading") { Heading("New session", "Choices reported by the selected host") }
         item("agent-label") { Text("Agent", color = c.muted, fontSize = 12.sp) }
-        item("agent-default") { SmallAction("Host default") { agent = null } }
+        item("agent-default") { SelectionAction("Host default", agent == null) { agent = null } }
         items(
             state.agents.filter {
                 !it.hidden && it.mode != dev.local.opencodecompanion.protocol.V2AgentMode.Subagent
             },
             key = { "agent:${it.id}" },
         ) { option ->
-            SmallAction((if (agent == option.id) "✓ " else "") + option.id) { agent = option.id }
+            SelectionAction(option.id, agent == option.id) { agent = option.id }
         }
         item("model-label") { Text("Model", color = c.muted, fontSize = 12.sp) }
-        item("model-default") { SmallAction("Host default") { model = null } }
+        item("model-default") { SelectionAction("Host default", model == null) { model = null } }
         items(state.models.filter { it.enabled }, key = { "model:${it.providerId}:${it.id}" }) {
             option ->
             val selection = V2ModelSelection(option.providerId, option.id)
-            SmallAction((if (model == selection) "✓ " else "") + option.name) { model = selection }
+            SelectionAction(option.name, model == selection) { model = selection }
         }
         item("submit") {
             PrimaryAction(
@@ -641,75 +644,103 @@ private fun ConversationPage(
                 fontSize = 13.sp,
             )
         }
-        Box(Modifier.weight(1f)) {
-            LazyColumn(
-                state = listState,
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(15.dp),
-            ) {
-                if (rows.isEmpty())
-                    item("empty") {
-                        Text("No conversation content yet.", color = c.muted, fontSize = 14.sp)
-                    }
-                items(rows, key = { it.key }) { row ->
-                    Panel(
-                        Modifier.fillMaxWidth()
-                            .then(
-                                if (row.detail != null)
-                                    Modifier.clickable {
-                                        expandedTool =
-                                            if (expandedTool == row.key) null else row.key
-                                    }
-                                else Modifier
-                            )
+        BoxWithConstraints(Modifier.weight(1f)) {
+            // Measure after the composer. Reserve room for a complete request action even
+            // with enlarged text and the IME; older conversation output may yield space.
+            val requestViewport = minOf(maxHeight, maxOf(96.dp, minOf(240.dp, maxHeight * 0.45f)))
+            Column(Modifier.fillMaxSize()) {
+                Box(Modifier.weight(1f)) {
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.fillMaxSize().testTag("conversation-list"),
+                        contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(15.dp),
                     ) {
-                        Text(
-                            row.label,
-                            color = c.muted,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.SemiBold,
-                        )
-                        Text(row.body, color = c.text, fontSize = 14.sp, lineHeight = 21.sp)
-                        if (row.detail != null && expandedTool == row.key) {
-                            Text(row.detail, color = c.muted, fontSize = 12.sp, lineHeight = 18.sp)
+                        if (rows.isEmpty())
+                            item("empty") {
+                                Text(
+                                    "No conversation content yet.",
+                                    color = c.muted,
+                                    fontSize = 14.sp,
+                                )
+                            }
+                        items(rows, key = { it.key }) { row ->
+                            Panel(
+                                Modifier.fillMaxWidth()
+                                    .then(
+                                        if (row.detail != null)
+                                            Modifier.semantics {
+                                                    stateDescription =
+                                                        if (expandedTool == row.key) "Expanded"
+                                                        else "Collapsed"
+                                                }
+                                                .clickable(
+                                                    role = Role.Button,
+                                                    onClickLabel =
+                                                        if (expandedTool == row.key)
+                                                            "Collapse tool output"
+                                                        else "Expand tool output",
+                                                ) {
+                                                    expandedTool =
+                                                        if (expandedTool == row.key) null
+                                                        else row.key
+                                                }
+                                        else Modifier
+                                    )
+                            ) {
+                                Text(
+                                    row.label,
+                                    color = c.muted,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                )
+                                Text(row.body, color = c.text, fontSize = 14.sp, lineHeight = 21.sp)
+                                if (row.detail != null && expandedTool == row.key) {
+                                    Text(
+                                        row.detail,
+                                        color = c.muted,
+                                        fontSize = 12.sp,
+                                        lineHeight = 18.sp,
+                                    )
+                                }
+                            }
+                        }
+                        items(
+                            state.transientText.fragments
+                                .filterValues { it is V2TextFragment.Provisional }
+                                .toList(),
+                            key = { "live:${it.first.assistantMessageId}:${it.first.textId}" },
+                        ) { (_, fragment) ->
+                            Panel {
+                                Text("Assistant · live", color = c.muted, fontSize = 12.sp)
+                                Text(fragment.text, color = c.text, fontSize = 14.sp)
+                            }
                         }
                     }
+                    if (!following)
+                        SmallAction(
+                            "New output",
+                            modifier = Modifier.align(Alignment.BottomEnd).padding(12.dp),
+                        ) {
+                            setFollowing(true)
+                        }
                 }
-                items(
-                    state.transientText.fragments
-                        .filterValues { it is V2TextFragment.Provisional }
-                        .toList(),
-                    key = { "live:${it.first.assistantMessageId}:${it.first.textId}" },
-                ) { (_, fragment) ->
-                    Panel {
-                        Text("Assistant · live", color = c.muted, fontSize = 12.sp)
-                        Text(fragment.text, color = c.text, fontSize = 14.sp)
+                // Long or multiple requests remain scrollable without pushing the composer
+                // off-screen.
+                if (state.permissions.isNotEmpty() || state.questions.isNotEmpty()) {
+                    Column(
+                        Modifier.fillMaxWidth()
+                            .height(requestViewport)
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        state.permissions
+                            .filter { it.sessionKey == state.selectedSession }
+                            .forEach { request -> PermissionCard(request, state, viewModel) }
+                        state.questions
+                            .filter { it.sessionKey == state.selectedSession }
+                            .forEach { request -> QuestionCard(request, state, viewModel) }
                     }
                 }
-            }
-            if (!following)
-                SmallAction(
-                    "New output",
-                    modifier = Modifier.align(Alignment.BottomEnd).padding(12.dp),
-                ) {
-                    setFollowing(true)
-                }
-        }
-        // Long or multiple requests remain scrollable without pushing the composer off-screen.
-        if (state.permissions.isNotEmpty() || state.questions.isNotEmpty()) {
-            Column(
-                Modifier.fillMaxWidth()
-                    .weight(0.8f, fill = false)
-                    .heightIn(max = 240.dp)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                state.permissions
-                    .filter { it.sessionKey == state.selectedSession }
-                    .forEach { request -> PermissionCard(request, state, viewModel) }
-                state.questions
-                    .filter { it.sessionKey == state.selectedSession }
-                    .forEach { request -> QuestionCard(request, state, viewModel) }
             }
         }
         Row(
@@ -725,7 +756,8 @@ private fun ConversationPage(
                     composer = value
                     viewModel.saveDraft(value)
                 },
-                Modifier.weight(1f),
+                Modifier.weight(1f).heightIn(max = 120.dp),
+                maxLines = 4,
             )
             PrimaryAction(
                 "Send",
@@ -862,14 +894,15 @@ private fun PermissionCard(
 }
 
 @Composable
-private fun QuestionCard(
+internal fun QuestionCard(
     request: V2QuestionRequest,
     state: SessionUiState,
     viewModel: ConnectedViewModel,
 ) {
     val c = CompanionTheme.colors
-    val selected = remember(request.id) { mutableStateMapOf<Int, Set<String>>() }
-    val custom = remember(request.id) { mutableStateMapOf<Int, String>() }
+    val selected =
+        remember(request.sessionKey, request.id) { mutableStateMapOf<Int, Set<String>>() }
+    val custom = remember(request.sessionKey, request.id) { mutableStateMapOf<Int, String>() }
     Panel(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp)) {
         Text(
             "Question · ${request.sessionKey.sessionId.value}",
@@ -1008,6 +1041,7 @@ private fun Input(
     modifier: Modifier,
     keyboardType: KeyboardType = KeyboardType.Text,
     secret: Boolean = false,
+    maxLines: Int = Int.MAX_VALUE,
 ) {
     val c = CompanionTheme.colors
     BasicTextField(
@@ -1020,6 +1054,7 @@ private fun Input(
             .semantics { contentDescription = label },
         textStyle = TextStyle(color = c.text, fontSize = 14.sp),
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+        maxLines = maxLines,
         visualTransformation =
             if (secret) PasswordVisualTransformation()
             else androidx.compose.ui.text.input.VisualTransformation.None,
@@ -1043,7 +1078,7 @@ private fun SmallAction(
     Box(
         modifier
             .sizeIn(minHeight = 48.dp, minWidth = 48.dp)
-            .clickable(enabled = enabled, onClick = onClick)
+            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
             .padding(horizontal = 10.dp),
         contentAlignment = Alignment.Center,
     ) {
@@ -1057,13 +1092,29 @@ private fun SmallAction(
 }
 
 @Composable
+private fun SelectionAction(label: String, isSelected: Boolean, onClick: () -> Unit) {
+    val c = CompanionTheme.colors
+    Row(
+        Modifier.sizeIn(minHeight = 48.dp, minWidth = 48.dp)
+            .semantics { selected = isSelected }
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(horizontal = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (isSelected)
+            Text("✓ ", Modifier.clearAndSetSemantics {}, color = c.accentText, fontSize = 13.sp)
+        Text(label, color = c.accentText, fontSize = 13.sp, fontWeight = FontWeight.Medium)
+    }
+}
+
+@Composable
 private fun PrimaryAction(label: String, enabled: Boolean = true, onClick: () -> Unit) {
     val c = CompanionTheme.colors
     Box(
         Modifier.sizeIn(minHeight = 48.dp)
             .clip(RoundedCornerShape(6.dp))
             .background(if (enabled) c.accent else c.layer2)
-            .clickable(enabled = enabled, onClick = onClick)
+            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
             .padding(horizontal = 14.dp),
         contentAlignment = Alignment.Center,
     ) {

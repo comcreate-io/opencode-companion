@@ -10,8 +10,8 @@ android {
         applicationId = "dev.local.opencodecompanion"
         minSdk = 28
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0-dev"
+        versionCode = 2
+        versionName = "0.1.1-dev"
         testInstrumentationRunner = "dev.local.opencodecompanion.connected.FixtureTestRunner"
     }
     buildTypes {

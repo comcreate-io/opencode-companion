@@ -9,7 +9,8 @@ import androidx.compose.ui.graphics.Color
 /**
  * Resolved semantic colors from OpenCode V2's pinned explicit theme blocks. Source:
  * references/opencode/packages/ui/src/v2/styles/{colors,theme}.css at b471c2b. Inter is
- * intentionally not bundled until its distribution license is reviewed; Android sans is used.
+ * intentionally not bundled until its distribution license is reviewed; Android sans is used. Four
+ * native text-contrast adaptations are documented in docs/UX.md and covered by ThemeContrastTest.
  */
 data class CompanionColors(
     val background: Color,
@@ -38,13 +39,13 @@ private val LightColors =
         layer2 = Color(0xFFF2F2F2),
         text = Color(0xFF161616),
         muted = Color(0xFF5C5C5C),
-        faint = Color(0xFF808080),
+        faint = Color(0xFF6B6B6B),
         border = Color(0x14000000),
         accent = Color(0xFF3B5CF6),
         accentText = Color(0xFF3B5CF6),
         onAccent = Color.White,
-        success = Color(0xFF198B43),
-        warning = Color(0xFFCB9F34),
+        success = Color(0xFF187C3C),
+        warning = Color(0xFF856515),
         warningBackground = Color(0xFFFEFAEC),
         danger = Color(0xFFB82D35),
         dangerBackground = Color(0xFFFCECEB),
@@ -58,7 +59,7 @@ private val DarkColors =
         layer2 = Color(0xFF2E2E2E),
         text = Color(0xFFFAFAFA),
         muted = Color(0xFFAEAEAE),
-        faint = Color(0xFF808080),
+        faint = Color(0xFF999999),
         border = Color(0x14FFFFFF),
         accent = Color(0xFF3B5CF6),
         accentText = Color(0xFFA2BCFF),

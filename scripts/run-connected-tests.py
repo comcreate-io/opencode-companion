@@ -162,12 +162,14 @@ def main():
     parser.add_argument("--ready", required=True, type=Path)
     parser.add_argument("--second-ready", type=Path)
     parser.add_argument("--output", required=True, type=Path)
-    parser.add_argument("--test", choices=("readToolDraftRecreationAndChanges", "questionReplyUsesRealPendingRequest", "interruptRemainsSeparateFromDisconnect"))
+    parser.add_argument("--test", choices=("readToolDraftRecreationAndChanges", "questionReplyUsesRealPendingRequest", "interruptRemainsSeparateFromDisconnect", "readingPositionSurvivesRecreation"))
     parser.add_argument("--process-recovery", action="store_true")
     parser.add_argument("--credential-replacement", action="store_true")
     parser.add_argument("--permission-reply", action="store_true")
+    parser.add_argument("--accessibility-layout", action="store_true")
+    parser.add_argument("--question-isolation", action="store_true")
     args = parser.parse_args()
-    if sum(bool(value) for value in (args.second_ready, args.test, args.process_recovery, args.credential_replacement, args.permission_reply)) > 1:
+    if sum(bool(value) for value in (args.second_ready, args.test, args.process_recovery, args.credential_replacement, args.permission_reply, args.accessibility_layout, args.question_isolation)) > 1:
         parser.error("Choose one suite or method")
     serial = args.serial
     metadata = target_metadata(serial)
@@ -197,7 +199,9 @@ def run_native(args, serial, fixture, second, session):
     run_id = uuid.uuid4().hex
     for apk in ("app/build/outputs/apk/debug/app-debug.apk", "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"):
         subprocess.run(["adb", "-s", serial, "install", "-r", apk], check=True, capture_output=True)
-    test_class = ("PermissionReplyTest" if args.permission_reply else
+    test_class = ("QuestionStateIsolationTest" if args.question_isolation else
+                  "AccessibilityLayoutTest" if args.accessibility_layout else
+                  "PermissionReplyTest" if args.permission_reply else
                   "CredentialReplacementTest" if args.credential_replacement else
                   "ProcessRecoveryTest" if args.process_recovery else
                   "TwoHostTest" if second else "ConnectedHostTest")
@@ -214,8 +218,8 @@ def run_native(args, serial, fixture, second, session):
                     "-e", "fixtureSession", session]
     command += ["dev.local.opencodecompanion.debug.test/dev.local.opencodecompanion.connected.FixtureTestRunner"]
     methods = ("prepareDurableDraft", "restoreDurableDraft") if args.process_recovery else (None,)
-    count = 1 if args.test or second or args.process_recovery or args.credential_replacement or args.permission_reply else 3
-    expected = "OK (1 test)" if count == 1 else "OK (3 tests)"
+    count = 2 if args.accessibility_layout or args.question_isolation else (1 if args.test or second or args.process_recovery or args.credential_replacement or args.permission_reply else 4)
+    expected = "OK (1 test)" if count == 1 else f"OK ({count} tests)"
     outputs = []
     failed = False
     for method in methods:

@@ -2,11 +2,15 @@ package dev.local.opencodecompanion.connected
 
 import android.graphics.Bitmap
 import android.view.inputmethod.InputMethodManager
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.lifecycle.ViewModelProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import dev.local.opencodecompanion.MainActivity
+import dev.local.opencodecompanion.protocol.transcript.Kind
 import java.io.File
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
@@ -47,6 +51,9 @@ class ConnectedHostTest {
     }
 
     private fun setup(name: String) {
+        compose
+            .onNodeWithTag("machine-list")
+            .performScrollToNode(hasContentDescription("Machine name"))
         compose.onNodeWithContentDescription("Machine name").performTextInput(name)
         compose
             .onNodeWithContentDescription("https://host.example")
@@ -58,6 +65,9 @@ class ConnectedHostTest {
         compose.onNodeWithText(" I understand and accept").performScrollTo().performClick()
         compose.onNodeWithText("Save machine").performScrollTo().performClick()
         awaitText("Ready · host current")
+        compose
+            .onNodeWithTag("machine-list")
+            .performScrollToNode(hasText(name) and hasClickAction() and hasSetTextAction().not())
         compose
             .onNode(hasText(name) and hasClickAction() and hasSetTextAction().not())
             .performScrollTo()
@@ -72,7 +82,7 @@ class ConnectedHostTest {
             compose.onAllNodesWithTag("session-catalog").fetchSemanticsNodes().isNotEmpty()
         }
         compose.onNodeWithTag("session-catalog").performScrollToNode(hasText("Fixture"))
-        compose.onNodeWithText("Fixture").performClick()
+        compose.onNodeWithText("Fixture").performClick().assertIsSelected()
         compose.onNodeWithTag("session-catalog").performScrollToNode(hasText("Create session"))
         compose.onNodeWithText("Create session").performClick()
         compose.waitUntil(30_000) {
@@ -115,6 +125,14 @@ class ConnectedHostTest {
         send("READ_CASE")
         awaitText("Fixture complete.")
         awaitText("ANDROID_READ_MARKER", substring = true)
+        val tool = compose.onNodeWithText("Tool · read")
+        tool
+            .performScrollTo()
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Collapsed"))
+        tool
+            .performClick()
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Expanded"))
+        tool.performClick()
         compose
             .onNodeWithContentDescription("Message")
             .performTextInput("Draft survives recreation")
@@ -167,5 +185,45 @@ class ConnectedHostTest {
         }
         awaitText("Ready · host current")
         screenshot("connected-interrupted.png")
+    }
+
+    @Test
+    fun readingPositionSurvivesRecreation() {
+        setup("Android reading fixture")
+        newSession()
+        val model = ViewModelProvider(compose.activity)[ConnectedViewModel::class.java]
+        repeat(6) { index ->
+            val previous =
+                model.state.value.transcript?.seen?.values?.count { it.kind is Kind.TextEnded } ?: 0
+            send("READ_CASE anchor-$index")
+            compose.waitUntil(30_000) {
+                (model.state.value.transcript?.seen?.values?.count { it.kind is Kind.TextEnded }
+                    ?: 0) > previous &&
+                    model.state.value.selectedSession !in model.state.value.active
+            }
+        }
+        val list = compose.onNodeWithTag("conversation-list")
+        list.performScrollToNode(hasText("READ_CASE anchor-1"))
+        list.performTouchInput {
+            swipeDown(startY = centerY, endY = centerY + 40f, durationMillis = 300)
+        }
+        awaitText("New output")
+        val marker = compose.onNodeWithText("READ_CASE anchor-1")
+        marker.assertIsDisplayed()
+        val before = marker.fetchSemanticsNode().boundsInRoot.top
+        screenshot("reading-before-recreation.png")
+        compose.activityRule.scenario.recreate()
+        awaitText("Ready · host current")
+        compose.waitForIdle()
+        compose.onNodeWithText("New output").assertIsDisplayed()
+        val after =
+            compose
+                .onNodeWithText("READ_CASE anchor-1")
+                .assertIsDisplayed()
+                .fetchSemanticsNode()
+                .boundsInRoot
+                .top
+        assertEquals("Activity recreation must retain the reading anchor", before, after, 4f)
+        screenshot("reading-after-recreation.png")
     }
 }

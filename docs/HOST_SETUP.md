@@ -1,6 +1,6 @@
 # Candidate host setup
 
-Candidate walkthrough, 2026-09-27. Manual HTTPS setup and per-machine shared-password acknowledgement are implemented; unknown/different host builds fail closed. The clean candidate passed native and platform checks on both emulator and Pixel; real-network and layout acceptance remain open; see the [connected report](evidence/M3/connected/REPORT.md). This is for a trusted owner testing against a disposable Linux/NixOS host workspace. It does not provision a tunnel or establish production acceptance. The [testing handoff](TESTING.md) identifies the candidate APK, checksum and signing identity; do not substitute an older foundation APK.
+Candidate walkthrough, 2026-09-27. Manual HTTPS setup and per-machine shared-password acknowledgement are implemented; unknown/different host builds fail closed. [Testing handoff](TESTING.md) identifies the current 0.1.1 candidate and [accessibility evidence](evidence/M3/accessibility/REPORT.md) records its checks. The [connected report](evidence/M3/connected/REPORT.md) covers historical 0.1.0 emulator/Pixel fixture success, not current physical or real-network acceptance. The intended host and disposable path are still to be supplied. This guide does not provision a tunnel or establish production acceptance.
 
 ## Before connecting
 
@@ -80,10 +80,10 @@ Re-enter the credential on the **existing machine** using **Update password**. T
 
 Resolve unknown/outstanding sends before a planned rotation: the app blocks password replacement while an outgoing intent is unresolved. If the host credential was already revoked and reconciliation is impossible, leave the intent blocked and inspect its outcome directly on the host. This candidate requires manual recovery for that case; it has no automatic override, discard or resend. Do not restore a revoked credential to bypass the block.
 
-Final unit, platform and native acceptance of this new replacement flow remains pending. The feature does not add per-device revocation: every client sharing the old host password loses access when it is revoked. Removing local host access must never delete remote sessions.
+Local unit/platform/native replacement checks passed for the 0.1.0 baseline; the 0.1.1 native credential-replacement regression also passed on the emulator. Actual-host rotation/re-pair acceptance remains open. The feature does not add per-device revocation: every client sharing the old host password loses access when it is revoked. Removing local host access must never delete remote sessions.
 
 ## What is and is not established
 
 Pinned runtime probes and local HTTPS fixture checks are recorded in [M1 runtime evidence](evidence/M1/REPORT.md) and [HTTPS transport evidence](evidence/M1/transport/REPORT.md). Those reports describe their own historical scope; the candidate handoff must identify later integrated checks and the exact APK.
 
-This guide does not claim a named tunnel, fresh-host installation, password rotation/re-pair or physical Android remote acceptance passed. These remain separate observed gates. Run the candidate acceptance checklist before using important repositories; a successful local HTTPS test is not evidence of the untested tunnel or phone path.
+This guide does not claim a named tunnel, fresh-host installation, actual-host password rotation/re-pair or physical Android real-network acceptance passed. These remain separate observed gates. Run the candidate acceptance checklist before using important repositories; a successful local HTTPS test is not evidence of the untested tunnel or phone path.
