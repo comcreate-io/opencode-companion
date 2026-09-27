@@ -15,7 +15,13 @@
     "credentialReplacement": 1,
     "permissionReply": 1
   },
-  "pixelNative": "pending unlocked device",
+  "pixelNative": {
+    "core": 3,
+    "twoHost": 1,
+    "processRecovery": 2,
+    "credentialReplacement": 1,
+    "permissionReply": 1
+  },
   "appLintErrors": 0,
   "appLintDependencyWarnings": 15,
   "clientLintIssues": 0,
@@ -33,5 +39,7 @@
   },
   "pixelInstalledApkVerified": true,
   "emulatorNativeArtifactVerified": true,
-  "sourceCi": "https://github.com/comcreate-io/opencode-companion/actions/runs/36338767704"
+  "sourceCi": "https://github.com/comcreate-io/opencode-companion/actions/runs/36338767704",
+  "pixelNativeTransport": "USB ADB reverse to disposable HTTPS fixtures; hostname and certificate validation retained",
+  "pixelNativeArtifactVerified": true
 }
