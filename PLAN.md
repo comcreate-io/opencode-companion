@@ -2,7 +2,7 @@
 
 Planning baseline: 2026-09-26. Owner and final technical authority: Carter McCann.
 
-This plan maps work; it does not claim implementation or authorize cloud resources or changes to real working repositories. On 2026-09-27 Carter authorized a public open-source repository under `comcreate-io`; license confirmation remains pending. Confirmed product choices are distinguished from proposed implementation defaults. Routine reversible implementation work can proceed once its milestone is authorized; do not repeatedly ask for decisions already made.
+This plan maps work; it does not claim implementation or authorize cloud resources or changes to real working repositories. On 2026-09-27 Carter authorized a public open-source repository under `comcreate-io`; Carter selected GPLv3 (`GPL-3.0-only`); the license decision is closed. Confirmed product choices are distinguished from proposed implementation defaults. Routine reversible implementation work can proceed once its milestone is authorized; do not repeatedly ask for decisions already made.
 
 ## 1. Outcome and scope
 
@@ -122,7 +122,7 @@ Exit: all R01–R12 evidence reviewed; no unresolved critical/high defect affect
 | D02 | Single user; own hosts; Android phone primary | Proposed default; confirm with plan review |
 | D03 | Actual supported OpenCode release + capability contract | Implementer proves in M1; Carter reviews any scope compromise |
 | D04 | Direct auth vs narrowly scoped gateway; QR/revocation semantics | M1 experiment, settled before M5 |
-| D05 | Application name, package ID, source license, repository destination | Public `comcreate-io/opencode-companion` authorized; MIT prepared pending Carter's license choice. Working name/package remain provisional before distribution. |
+| D05 | Application name, package ID, source license, repository destination | Public `comcreate-io/opencode-companion` authorized; GPLv3-only selected by Carter and recorded in LICENSE. Working name/package remain provisional before distribution. |
 | D06 | Supported Android API floor and actual test device | Proposed minSdk 28, subject to dependency/device check in M0; `(needs input: Carter's device/API)` before physical acceptance |
 | D07 | Stable Kotlin/Compose/Gradle/JDK/SDK combination | M0 toolchain verification; no guessed version numbers |
 | D08 | Signing ownership and distribution | Carter before M6; internal APK default proposal |

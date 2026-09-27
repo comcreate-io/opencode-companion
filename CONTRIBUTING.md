@@ -11,3 +11,5 @@ nix develop . --command ./gradlew --no-daemon spotlessCheck :protocol:test :clie
 ```
 
 Keep tests deterministic and use disposable hosts/repositories for integration probes. Never include real credentials, private source captures, signing keys or generated build output. Preserve third-party provenance and notices. New phone layouts need concrete review artifacts before production implementation.
+
+Original project code is licensed under GPL-3.0-only; contributions to it must be compatible with that license. Preserve the separate licenses and notices of third-party code.

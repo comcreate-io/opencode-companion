@@ -14,4 +14,4 @@ The protocol batch reviewed 17 selected files plus nine excluded test/provenance
 
 After fixes, all 22 real-host probe groups and all 45 Kotlin tests passed. Formatting, Android lint and both APK assemblies passed. Exact counts, hashes, dependencies and limitations are in the [transport report](REPORT.md).
 
-This review does not grant merge approval or establish a connected Android client. A PR must record its exact base/head and recheck any subsequent changes using [the review procedure](../../../CODE_REVIEW.md). The public repository is bootstrapped; source publication and the initial PR await the project license decision.
+This review does not grant merge approval or establish a connected Android client. A PR must record its exact base/head and recheck any subsequent changes using [the review procedure](../../../CODE_REVIEW.md). Carter selected GPLv3-only after this review. The official GPLv3 text and the licensing documentation were checked separately before source publication; third-party notices remain intact.
