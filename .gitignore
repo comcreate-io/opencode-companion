@@ -13,3 +13,5 @@
 .env.*
 !.envrc
 .idea/
+__pycache__/
+*.pyc

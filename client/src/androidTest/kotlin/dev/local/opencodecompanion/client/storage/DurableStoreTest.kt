@@ -3,6 +3,7 @@ package dev.local.opencodecompanion.client.storage
 import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import dev.local.opencodecompanion.client.ReadScope
 import dev.local.opencodecompanion.client.SendDestination
 import dev.local.opencodecompanion.client.SendState
 import dev.local.opencodecompanion.protocol.MachineId
@@ -10,6 +11,9 @@ import dev.local.opencodecompanion.protocol.ProjectId
 import dev.local.opencodecompanion.protocol.ProjectKey
 import dev.local.opencodecompanion.protocol.SessionId
 import dev.local.opencodecompanion.protocol.SessionKey
+import dev.local.opencodecompanion.protocol.V2Delivery
+import dev.local.opencodecompanion.protocol.V2PromptAdmission
+import dev.local.opencodecompanion.protocol.V2SessionSummary
 import java.util.UUID
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
@@ -88,9 +92,24 @@ class DurableStoreTest {
         assertEquals(SendState.Finalized, store.outgoing(first, "msg_one")?.state)
 
         assertTrue(store.prepareIntent("msg_stale", destination, "pending"))
-        store.putMachine(profile(first, generation = 2))
+        val rotation =
+            PendingCredentialRotation(
+                first,
+                "https://fixture.example/",
+                1,
+                "credential:${first.value}",
+                "https://fixture.example/",
+                2,
+                "credential:${first.value}",
+            )
+        assertFalse(store.beginCredentialRotation(rotation))
+        assertTrue(store.beginDispatch(first, "msg_stale"))
+        assertTrue(store.recordRejectionAfterProof(first, "msg_stale"))
+        assertTrue(store.finalizeBookkeeping(first, "msg_stale"))
+        assertTrue(store.beginCredentialRotation(rotation))
+        assertTrue(store.finishCredentialRotation(rotation))
         assertFalse(store.beginDispatch(first, "msg_stale"))
-        assertEquals(SendState.Prepared, store.outgoing(first, "msg_stale")?.state)
+        assertEquals(SendState.Finalized, store.outgoing(first, "msg_stale")?.state)
     }
 
     @Test
@@ -196,6 +215,136 @@ class DurableStoreTest {
         expectFailure { store.commitEvents(key, 0, listOf(event(1, "evt_first", "msg_changed"))) }
         assertEquals(1L, store.cursor(key))
     }
+
+    @Test
+    fun summariesAndUnresolvedIntentsRemainMachineAndCredentialScoped() = runBlocking {
+        store.putMachine(profile(first))
+        store.putMachine(profile(second))
+        val firstScope = ReadScope(first, "https://fixture.example/", 1)
+        val secondScope = ReadScope(second, "https://fixture.example/", 1)
+        val summary =
+            V2SessionSummary(
+                SessionId("ses_same"),
+                ProjectId("global"),
+                "/fixture/repo",
+                null,
+                null,
+                "Fixture",
+                1,
+                2,
+            )
+        assertTrue(store.putSessionSummary(firstScope, destination(first).session, summary))
+        assertTrue(store.putSessionSummary(secondScope, destination(second).session, summary))
+        assertEquals(2, store.machines().size)
+        assertEquals(1, store.sessionSummaries(firstScope).size)
+        assertEquals(1, store.sessionSummaries(secondScope).size)
+        assertFalse(
+            store.putSessionSummary(
+                firstScope.copy(origin = "https://elsewhere.example/"),
+                destination(first).session,
+                summary,
+            )
+        )
+        assertTrue(store.sessionSummaries(firstScope.copy(credentialGeneration = 2)).isEmpty())
+
+        assertTrue(
+            store.prepareIntent("msg_first", destination(first), "first", V2Delivery.Steer, null)
+        )
+        assertTrue(
+            store.prepareIntent("msg_second", destination(second), "second", V2Delivery.Queue, null)
+        )
+        assertEquals(listOf("msg_first"), store.unresolvedOutgoing(first).map { it.id })
+        assertEquals(V2Delivery.Queue, store.unresolvedOutgoing(second).single().delivery)
+    }
+
+    @Test
+    fun acknowledgementChecksHostIdentityAndOnlyClearsMatchingDraftRevision() = runBlocking {
+        store.putMachine(profile(first))
+        val key = draftKey(first)
+        val old = requireNotNull(store.saveDraft(key, 0, "first text"))
+        assertTrue(
+            store.prepareIntent("msg_first", destination(first), old.text, V2Delivery.Steer, old)
+        )
+        assertTrue(store.beginDispatch(first, "msg_first"))
+        val new = requireNotNull(store.saveDraft(key, old.revision, "new text"))
+        assertFalse(
+            store.acknowledgeAfterProof(first, "msg_first", admission("msg_wrong", "first text"))
+        )
+        assertFalse(
+            store.acknowledgeAfterProof(second, "msg_first", admission("msg_first", "first text"))
+        )
+        assertTrue(
+            store.acknowledgeAfterProof(first, "msg_first", admission("msg_first", "first text"))
+        )
+        assertEquals(SendState.Admitted, store.outgoing(first, "msg_first")?.state)
+        assertEquals(new, store.draft(key))
+        assertTrue(store.finalizeBookkeeping(first, "msg_first"))
+        assertTrue(store.unresolvedOutgoing(first).isEmpty())
+
+        assertTrue(
+            store.prepareIntent("msg_second", destination(first), new.text, V2Delivery.Steer, new)
+        )
+        assertTrue(store.beginDispatch(first, "msg_second"))
+        assertTrue(
+            store.acknowledgeAfterProof(first, "msg_second", admission("msg_second", new.text))
+        )
+        assertTrue(requireNotNull(store.draft(key)).cleared)
+        assertFalse(
+            store.acknowledgeAfterProof(first, "msg_second", admission("msg_second", "different"))
+        )
+    }
+
+    @Test
+    fun pendingRotationSurvivesReopenAndClearsOnlyOldMachineCache() = runBlocking {
+        store.putMachine(profile(first))
+        store.putMachine(profile(second))
+        val firstScope = ReadScope(first, "https://fixture.example/", 1)
+        val secondScope = ReadScope(second, "https://fixture.example/", 1)
+        val summary =
+            V2SessionSummary(
+                SessionId("ses_same"),
+                ProjectId("global"),
+                "/fixture/repo",
+                null,
+                null,
+                "Fixture",
+                1,
+                2,
+            )
+        store.putSessionSummary(firstScope, destination(first).session, summary)
+        store.putSessionSummary(secondScope, destination(second).session, summary)
+        val pending =
+            PendingCredentialRotation(
+                first,
+                "https://fixture.example/",
+                1,
+                "credential:${first.value}",
+                "https://fixture.example/",
+                2,
+                "credential:${first.value}",
+            )
+        assertTrue(store.beginCredentialRotation(pending))
+        store.close()
+        store = DurableStore.open(context, name)
+        assertEquals(listOf(pending), store.pendingCredentialRotations())
+        assertTrue(store.finishCredentialRotation(pending))
+        assertEquals("https://fixture.example/", store.machine(first)?.origin)
+        assertTrue(store.sessionSummaries(firstScope).isEmpty())
+        assertEquals(1, store.sessionSummaries(secondScope).size)
+        assertTrue(store.pendingCredentialRotations().isEmpty())
+        val crossOrigin =
+            pending.copy(oldGeneration = 2, newGeneration = 3, newOrigin = "https://new.example/")
+        try {
+            store.beginCredentialRotation(crossOrigin)
+            org.junit.Assert.fail("Expected new origin to require a new machine identity")
+        } catch (_: IllegalArgumentException) {
+            assertTrue(store.pendingCredentialRotations().isEmpty())
+            assertEquals(2L, store.machine(first)?.credentialGeneration)
+        }
+    }
+
+    private fun admission(id: String, text: String) =
+        V2PromptAdmission(id, SessionId("ses_same"), 1, "steer", text, 1)
 
     private fun profile(machine: MachineId, generation: Long = 1) =
         MachineProfile(

@@ -88,6 +88,8 @@ sealed interface ReadFailure {
 
     data object DecodeFailure : ReadFailure
 
+    data object UnsupportedVersion : ReadFailure
+
     data object TransportUnavailable : ReadFailure
 
     data class HttpStatus(val code: Int) : ReadFailure

@@ -12,11 +12,12 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "0.1.0-dev"
+        testInstrumentationRunner = "dev.local.opencodecompanion.connected.FixtureTestRunner"
     }
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
-            versionNameSuffix = "-visual-proof"
+            versionNameSuffix = "-candidate"
         }
         release { isMinifyEnabled = false }
     }
@@ -30,10 +31,24 @@ android {
 
 dependencies {
     implementation(project(":client"))
+    implementation(project(":protocol"))
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.lifecycle.runtime.compose)
+    implementation(libs.lifecycle.viewmodel.compose)
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
     implementation(libs.compose.material3)
     implementation(libs.compose.preview)
     implementation(libs.activity.compose)
     debugImplementation(libs.compose.tooling)
+    debugImplementation(libs.compose.ui.test.manifest)
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.junit)
+    // Android 16 removed InputManager.getInstance; 3.7 uses the public system service.
+    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.junit)
+    androidTestImplementation(libs.okhttp)
+    androidTestImplementation(libs.okhttp.tls)
 }

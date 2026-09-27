@@ -3,6 +3,8 @@ package dev.local.opencodecompanion
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import dev.local.opencodecompanion.connected.ConnectedScreen
+import dev.local.opencodecompanion.connected.ConnectedViewModel
 
 // These fixtures exist only in the debug source set. No server data or network behavior is implied.
 private val machines =
@@ -63,20 +65,20 @@ private val content =
     )
 
 @Composable
-fun CompanionEntry(modifier: Modifier = Modifier) {
-    CompanionProof(machines, sessions, changes, content, modifier)
+fun CompanionEntry(viewModel: ConnectedViewModel, modifier: Modifier = Modifier) {
+    ConnectedScreen(viewModel, modifier)
 }
 
 @Preview(name = "Proof light", showBackground = true, widthDp = 393, heightDp = 852)
 @Composable
 private fun PreviewLight() {
-    CompanionTheme(dark = false) { CompanionEntry() }
+    CompanionTheme(dark = false) { CompanionProof(machines, sessions, changes, content) }
 }
 
 @Preview(name = "Proof dark", showBackground = true, widthDp = 393, heightDp = 852)
 @Composable
 private fun PreviewDark() {
-    CompanionTheme(dark = true) { CompanionEntry() }
+    CompanionTheme(dark = true) { CompanionProof(machines, sessions, changes, content) }
 }
 
 @Preview(name = "Machines", showBackground = true, widthDp = 393, heightDp = 852)

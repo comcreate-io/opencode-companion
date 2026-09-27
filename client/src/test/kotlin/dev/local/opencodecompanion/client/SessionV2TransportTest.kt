@@ -67,6 +67,45 @@ class SessionV2TransportTest {
     }
 
     @Test
+    fun exactHostBuildIsRequiredBeforeEnablingSessionWork() =
+        runBlocking<Unit> {
+            server.enqueue(response("""{"healthy":true,"version":"1.18.32"}"""))
+            assertTrue(transport.compatibility(destination) is ReadResult.Success)
+            assertEquals("/global/health", server.takeRequest().url.encodedPath)
+            server.enqueue(response("""{"healthy":true,"version":"1.18.33"}"""))
+            assertEquals(
+                ReadResult.Failure(ReadFailure.UnsupportedVersion),
+                transport.compatibility(destination),
+            )
+            server.enqueue(response("""{"healthy":true}"""))
+            assertEquals(
+                ReadResult.Failure(ReadFailure.DecodeFailure),
+                transport.compatibility(destination),
+            )
+        }
+
+    @Test
+    fun changesCaptureDirectoryAndRejectCrossMachineOrRelativePaths() =
+        runBlocking<Unit> {
+            server.enqueue(response("[]"))
+            val result = transport.changes(destination, key, "/fixture/project with spaces")
+            assertTrue(result is ReadResult.Success)
+            val request = server.takeRequest()
+            assertEquals("/vcs/diff", request.url.encodedPath)
+            assertEquals("git", request.url.queryParameter("mode"))
+            assertEquals("/fixture/project with spaces", request.url.queryParameter("directory"))
+            assertTrue(transport.changes(destination, key, "relative") is ReadResult.Failure)
+            assertTrue(
+                transport.changes(
+                    destination,
+                    SessionKey(MachineId("other"), sessionId),
+                    "/fixture",
+                ) is ReadResult.Failure
+            )
+            assertEquals(1, server.requestCount)
+        }
+
+    @Test
     fun readsExactSessionHistoryAndPendingRoutes() = runBlocking {
         server.enqueue(response(fixture("session")))
         val session = transport.session(destination, key)

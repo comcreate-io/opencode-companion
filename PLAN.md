@@ -2,7 +2,7 @@
 
 Planning baseline: 2026-09-26. Owner and final technical authority: Carter McCann.
 
-This plan maps work; it does not claim implementation or authorize cloud resources or changes to real working repositories. On 2026-09-27 Carter authorized a public open-source repository under `comcreate-io`; Carter selected GPLv3 (`GPL-3.0-only`); the license decision is closed. Confirmed product choices are distinguished from proposed implementation defaults. Routine reversible implementation work can proceed once its milestone is authorized; do not repeatedly ask for decisions already made.
+This plan maps work and records observed implementation progress; it does not authorize cloud resources or changes to real working repositories. On 2026-09-27 Carter authorized a public open-source repository under `comcreate-io`; Carter selected GPLv3 (`GPL-3.0-only`); the license decision is closed. Confirmed product choices are distinguished from proposed implementation defaults. Routine reversible implementation work can proceed once its milestone is authorized; do not repeatedly ask for decisions already made.
 
 ## 1. Outcome and scope
 
@@ -80,7 +80,7 @@ Deliver: isolated upstream release installation and disposable repository; proto
 
 Exit: select an exact supported release/build, document observed behavior and implement the smallest typed adapter needed for M3. No guessed endpoints or fallback-to-success. If a release lacks required replay/auth facilities, select another tested release or propose a bounded workaround with tests; do not hide incompatibility. Do not run agent actions on Carter's real projects.
 
-Progress (2026-09-26): official 1.18.32 passed ten isolated admission/replay case groups, including dropped-response reconciliation and restart. Strict Kotlin JSON/SSE decoding and real fixtures are implemented. A subsequent loopback model fixture proved execution, text replay, read/question tools, active interrupt and basic diff reads; a separate permission probe exercised simultaneous replies. Read-only Kotlin HTTPS transport now passes local TLS fixture tests. The [foundation wave](docs/evidence/M3/foundations/REPORT.md) adds Room persistence, Keystore storage and a bounded observed durable transcript reducer. Coordinator/UI integration and remote auth remain open. [Transport evidence](docs/evidence/M1/transport/REPORT.md). [Execution evidence](docs/evidence/M1/execution/REPORT.md). [M1 report](docs/evidence/M1/REPORT.md).
+Progress (2026-09-26): official 1.18.32 passed ten isolated admission/replay case groups, including dropped-response reconciliation and restart. Strict Kotlin JSON/SSE decoding and real fixtures are implemented. A subsequent loopback model fixture proved execution, text replay, read/question tools, active interrupt and basic diff reads; a separate permission probe exercised simultaneous replies. Read-only Kotlin HTTPS transport now passes local TLS fixture tests. The [foundation wave](docs/evidence/M3/foundations/REPORT.md) adds Room persistence, Keystore storage and a bounded observed durable transcript reducer. Coordinator/UI integration is now implemented; its interim evidence and remaining acceptance are recorded under M3 below. Real remote-path auth/rotation acceptance remains open. [Transport evidence](docs/evidence/M1/transport/REPORT.md). [Execution evidence](docs/evidence/M1/execution/REPORT.md). [M1 report](docs/evidence/M1/REPORT.md).
 
 Auth decision: test built-in access first. A private direct endpoint may support the technical spike. The supported remote path requires authenticated HTTPS and a documented revocation story. If shared server credentials cannot meet per-device revocation, explicitly choose an MVP rotation/re-pair limitation or a small gateway; do not silently promise both simplicity and a feature the server lacks.
 
@@ -96,6 +96,8 @@ Deliver: authenticated connection, session discovery/create/open, durable compos
 
 Exit: actual Android device completes a session in the disposable repository, backgrounds/reopens and reconstructs it correctly. A forced drop after send acceptance does not produce a silent resend. Save redacted test evidence and an installable debug artifact.
 
+Progress (2026-09-27): connected host/session setup, scoped drafts, send/replay recovery, request controls and changes UI are implemented. Build13 passed protocol/client tests and debug/instrumentation assembly. Twenty platform storage/Keystore cases passed in `b2-platform-1`; three native real-HTTPS scenarios passed in `b2-native-8`; process-death draft recovery and credential reuse passed across two separate instrumentation runs in `b2-process-1`. The forthcoming [connected report](docs/evidence/M3/connected/REPORT.md) will record these runs and final results. Final suites and candidate packaging remain in progress. These emulator results do not establish physical-device acceptance; M3's full exit is not claimed.
+
 ### M4 — Multi-machine and interaction reliability
 
 Deliver: two independent host profiles, scoped state, permissions/questions, read-only file/diff review, race-safe switching, unknown-result recovery UI and large-history behavior. Include manual disconnect/reconnect, token expiry, process kill, concurrent desktop client and server-restart scenarios.
@@ -107,6 +109,8 @@ Exit: R02 and R05–R09 failure cases pass on real hosts and Android. The app kn
 Deliver: finalized auth mode; manual HTTPS setup and, if supported by the chosen mode, expiring QR pairing; named Cloudflare Tunnel instructions/automation with preflight checks; sanitized diagnostics; remove-host and credential rotation/revocation walkthrough. First host platform: NixOS/Linux. macOS/Windows host installers are follow-up work unless explicitly added.
 
 Exit: fresh supported host + fresh app install reaches a usable session through the supported remote path. Check read-back of destination and active account before authorized cloud writes. Verify streaming, access denial, stale credentials, hostname changes and host restart. If Cloudflare credentials/domain are unavailable, mark remote acceptance pending; private-network success does not satisfy this gate.
+
+Progress (2026-09-27): same-origin credential replacement now preserves the existing machine, draft and journal through a pending profile/vault reconciliation protocol. Unresolved outgoing intents block replacement; ambiguous vault state fails closed until an app restart rechecks it. Local replacement does not prove host authentication. Final rotation unit/platform/native checks remain pending. If host revocation prevents reconciliation of an unresolved send, leave it blocked and inspect the host directly; manual recovery is required, with no automatic override or retry.
 
 ### M6 — Internal beta
 
@@ -120,8 +124,8 @@ Exit: all R01–R12 evidence reviewed; no unresolved critical/high defect affect
 |---|---|---|
 | D01 | Android/Kotlin/Compose, V2 primary UI | Carter; settled |
 | D02 | Single user; own hosts; Android phone primary | Proposed default; confirm with plan review |
-| D03 | Actual supported OpenCode release + capability contract | Implementer proves in M1; Carter reviews any scope compromise |
-| D04 | Direct auth vs narrowly scoped gateway; QR/revocation semantics | M1 experiment, settled before M5 |
+| D03 | Candidate adapter requires exactly OpenCode 1.18.32; unknown/different builds fail closed | Pinned runtime and adapter gate implemented; full compatibility acceptance remains evidence-gated |
+| D04 | Candidate uses manual HTTPS Basic with explicit per-machine shared-password acknowledgement; same-origin Update password flow implemented | Implemented for synthetic-host testing; Carter's actual-host acceptance and rotation/re-pair proof remain pending before M5 closes |
 | D05 | Application name, package ID, source license, repository destination | Public `comcreate-io/opencode-companion` authorized; GPLv3-only selected by Carter and recorded in LICENSE. Working name/package remain provisional before distribution. |
 | D06 | Supported Android API floor and actual test device | Proposed minSdk 28, subject to dependency/device check in M0; `(needs input: Carter's device/API)` before physical acceptance |
 | D07 | Stable Kotlin/Compose/Gradle/JDK/SDK combination | M0 toolchain verification; no guessed version numbers |
@@ -144,4 +148,4 @@ Exit: all R01–R12 evidence reviewed; no unresolved critical/high defect affect
 
 One small vertical slice per change: name the requirement, implement it, test its failure path, record observed evidence. Keep the plan current as decisions close. No percentages, invented ETAs or “production ready” based on mocks.
 
-Immediate next work: execute [the remaining build map](docs/BUILD_MAP.md), after reviewing the implemented storage, Keystore and durable transcript foundations, build session transport and recovery coordination; complete M2 phone-layout acceptance before the M3 connected UI. Cloud provisioning, iOS and a custom gateway are not automatic next steps.
+Immediate next work: finish combined verification and independent review of the connected implementation, then record the exact installable candidate and its limits in [connected evidence](docs/evidence/M3/connected/REPORT.md). Follow [the build map](docs/BUILD_MAP.md) for remaining acceptance: phone layouts/physical hardware, two-host and lifecycle failure coverage, protected remote setup and rotation/re-pair. Cloud provisioning, iOS and a custom gateway are not automatic next steps.

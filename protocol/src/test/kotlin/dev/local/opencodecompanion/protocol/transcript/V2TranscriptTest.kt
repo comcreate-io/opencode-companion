@@ -29,6 +29,10 @@ class V2TranscriptTest {
             assertEquals(record.decoded, V2Transcript.event(record.rawJson, session))
         }
         val state = replay(session, page)
+        val admitted = (page.events.first() as TranscriptDecode.Supported).event.promptAdmission()
+        assertEquals("STREAM_CASE", admitted?.promptText)
+        assertEquals(session.sessionId, admitted?.sessionId)
+        assertEquals(null, (page.events[1] as TranscriptDecode.Supported).event.promptAdmission())
         assertEquals(6, state.lastSequence)
         assertEquals("STREAM_CASE", state.prompts.values.single().text)
         assertTrue(state.prompts.values.single().prompted)
@@ -49,6 +53,7 @@ class V2TranscriptTest {
         assertEquals(12, read.lastSequence)
         val readTool = read.tools.values.single() as ToolSummary.Succeeded
         assertEquals("read", readTool.name)
+        assertEquals("M1_READ_MARKER\n", readTool.presentationOutput())
         assertEquals("/fixture/repo/README.md", (readTool.input["path"] as JsonPrimitive).content)
         assertEquals("M1_READ_MARKER\n", (readTool.structured["content"] as JsonPrimitive).content)
         assertEquals("Fixture complete.", (read.texts.values.single() as TextSummary.Ended).text)
@@ -175,6 +180,7 @@ class V2TranscriptTest {
             "Synthetic tool failure",
             (state.tools.values.single() as ToolSummary.Failed).error.message,
         )
+        assertEquals("Synthetic tool failure", state.tools.values.single().presentationOutput())
     }
 
     private fun replay(session: SessionKey, page: TranscriptPage): TranscriptState {

@@ -1,0 +1,17 @@
+{
+  "cases": [
+    "clean",
+    "explicit-directory isolation",
+    "binary",
+    "rename",
+    "deleted",
+    "5000 lines",
+    "non-Git empty response"
+  ],
+  "passed": true,
+  "limitations": [
+    "Empty response cannot distinguish clean Git from non-Git",
+    "No mutation endpoints used",
+    "UI not exercised by this probe"
+  ]
+}
