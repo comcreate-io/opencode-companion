@@ -1,0 +1,21 @@
+{
+  "modules": {
+    "protocol": {
+      "tests": 30,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "client": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "lintErrors": 0,
+  "lintWarnings": 8,
+  "debugAssembly": "passed",
+  "unsignedReleaseAssembly": "passed",
+  "spotlessCheck": "passed"
+}

@@ -1,0 +1,25 @@
+{
+  "okhttp": "5.3.2",
+  "coroutines": "1.10.2",
+  "checks": {
+    "protocol": {
+      "tests": 30,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "client": {
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "lint": {
+      "Error": 0,
+      "Warning": 12
+    }
+  },
+  "debugAssembly": "pass",
+  "unsignedReleaseAssembly": "pass",
+  "spotlessCheck": "pass"
+}

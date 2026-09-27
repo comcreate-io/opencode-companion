@@ -1,0 +1,8 @@
+<resources>
+    <style name="Theme.OpenCodeCompanion" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">#FAFAFA</item>
+        <item name="android:navigationBarColor">#FAFAFA</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+    </style>
+</resources>

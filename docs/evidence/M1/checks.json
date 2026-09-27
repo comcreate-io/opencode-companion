@@ -1,0 +1,31 @@
+{
+  "tests": [
+    {
+      "name": "dev.local.opencodecompanion.client.OutgoingIntentTest",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "dev.local.opencodecompanion.protocol.SseDecoderTest",
+      "tests": "7",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "dev.local.opencodecompanion.protocol.V2WireCodecTest",
+      "tests": "9",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    }
+  ],
+  "lint": {
+    "errors": 0,
+    "warnings": 8
+  },
+  "build": "success; debug and unsigned release",
+  "formatter": "pass"
+}

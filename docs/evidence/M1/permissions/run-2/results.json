@@ -1,0 +1,39 @@
+{
+  "binarySha256": "513f500a1a5ea1dc7d865547ac87b32a8936334e8d5abd5b3ff585c45a170080",
+  "cases": [
+    {
+      "case": "two disposable sessions begin with no pending requests",
+      "status": "pass"
+    },
+    {
+      "case": "pending ask is session-bound; wrong-session get and reply return 404",
+      "status": "pass"
+    },
+    {
+      "case": "once removes pending request; repeated response is stale",
+      "status": "pass"
+    },
+    {
+      "case": "reject clears same-session pending requests; double and cascaded replies are stale",
+      "status": "pass"
+    },
+    {
+      "case": "simultaneous once replies accept only one client",
+      "httpStatuses": [
+        204,
+        404
+      ],
+      "pendingAfter": 0,
+      "status": "pass"
+    }
+  ],
+  "limitations": [
+    "Synthetic API-created request only; no agent tool permission was exercised",
+    "No process-restart pending-request durability was tested",
+    "No always reply or saved permission was created"
+  ],
+  "modelExecution": false,
+  "runtime": "1.18.32",
+  "syntheticAction": "m1.synthetic.permission",
+  "transport": "loopback HTTP with disposable Basic auth"
+}

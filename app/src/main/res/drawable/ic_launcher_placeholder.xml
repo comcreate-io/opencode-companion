@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Temporary original mark for local builds; final icon requires design review. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path android:fillColor="#161616" android:pathData="M0,0h48v48h-48z" />
+    <path android:fillColor="#3B5CF6" android:pathData="M11,13h8v4h-4v14h4v4h-8z" />
+    <path android:fillColor="#FAFAFA" android:pathData="M37,13h-8v4h4v14h-4v4h8z" />
+    <path android:fillColor="#FAFAFA" android:pathData="M21,22h6v4h-6z" />
+</vector>
