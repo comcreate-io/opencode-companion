@@ -1,0 +1,110 @@
+INSTRUMENTATION_STATUS: class=dev.local.opencodecompanion.connected.ConnectedHostTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=4
+INSTRUMENTATION_STATUS: stream=
+dev.local.opencodecompanion.connected.ConnectedHostTest:
+INSTRUMENTATION_STATUS: test=interruptRemainsSeparateFromDisconnect
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=dev.local.opencodecompanion.connected.ConnectedHostTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=4
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=interruptRemainsSeparateFromDisconnect
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=dev.local.opencodecompanion.connected.ConnectedHostTest
+INSTRUMENTATION_STATUS: current=2
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=4
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: test=readToolDraftRecreationAndChanges
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=dev.local.opencodecompanion.connected.ConnectedHostTest
+INSTRUMENTATION_STATUS: current=2
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=4
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=readToolDraftRecreationAndChanges
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=dev.local.opencodecompanion.connected.ConnectedHostTest
+INSTRUMENTATION_STATUS: current=3
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=4
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: test=readingPositionSurvivesRecreation
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=dev.local.opencodecompanion.connected.ConnectedHostTest
+INSTRUMENTATION_STATUS: current=3
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=4
+INSTRUMENTATION_STATUS: stack=java.lang.AssertionError: No node found that matches ((Text + InputText + EditableText contains 'Android reading fixture' (ignoreCase: false)) && (OnClick is defined)) && (NOT (SetText is defined)) in scrollable container
+Semantics of the node:
+Node #665 at (l=0.0, t=430.0, r=1344.0, b=2920.0)px, Tag: 'machine-list'
+CollectionInfo = 'androidx.compose.ui.semantics.CollectionInfo@22cb9b3'
+IsTraversalGroup = 'true'
+VerticalScrollAxisRange = 'ScrollAxisRange(value=138.0, maxValue=138.0, reverseScrolling=false)'
+Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+Has 5 children, 3 siblings
+Selector used: (TestTag = 'machine-list')
+
+	at androidx.compose.ui.test.ActionsKt.performScrollToNode(Actions.kt:257)
+	at dev.local.opencodecompanion.connected.ConnectedHostTest.setup(ConnectedHostTest.kt:70)
+	at dev.local.opencodecompanion.connected.ConnectedHostTest.readingPositionSurvivesRecreation(ConnectedHostTest.kt:192)
+
+INSTRUMENTATION_STATUS: stream=
+Error in readingPositionSurvivesRecreation(dev.local.opencodecompanion.connected.ConnectedHostTest):
+java.lang.AssertionError: No node found that matches ((Text + InputText + EditableText contains 'Android reading fixture' (ignoreCase: false)) && (OnClick is defined)) && (NOT (SetText is defined)) in scrollable container
+Semantics of the node:
+Node #665 at (l=0.0, t=430.0, r=1344.0, b=2920.0)px, Tag: 'machine-list'
+CollectionInfo = 'androidx.compose.ui.semantics.CollectionInfo@22cb9b3'
+IsTraversalGroup = 'true'
+VerticalScrollAxisRange = 'ScrollAxisRange(value=138.0, maxValue=138.0, reverseScrolling=false)'
+Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+Has 5 children, 3 siblings
+Selector used: (TestTag = 'machine-list')
+
+	at androidx.compose.ui.test.ActionsKt.performScrollToNode(Actions.kt:257)
+	at dev.local.opencodecompanion.connected.ConnectedHostTest.setup(ConnectedHostTest.kt:70)
+	at dev.local.opencodecompanion.connected.ConnectedHostTest.readingPositionSurvivesRecreation(ConnectedHostTest.kt:192)
+
+INSTRUMENTATION_STATUS: test=readingPositionSurvivesRecreation
+INSTRUMENTATION_STATUS_CODE: -2
+INSTRUMENTATION_STATUS: class=dev.local.opencodecompanion.connected.ConnectedHostTest
+INSTRUMENTATION_STATUS: current=4
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=4
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: test=questionReplyUsesRealPendingRequest
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=dev.local.opencodecompanion.connected.ConnectedHostTest
+INSTRUMENTATION_STATUS: current=4
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=4
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=questionReplyUsesRealPendingRequest
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_RESULT: stream=
+
+Time: 26,192
+There was 1 failure:
+1) readingPositionSurvivesRecreation(dev.local.opencodecompanion.connected.ConnectedHostTest)
+java.lang.AssertionError: No node found that matches ((Text + InputText + EditableText contains 'Android reading fixture' (ignoreCase: false)) && (OnClick is defined)) && (NOT (SetText is defined)) in scrollable container
+Semantics of the node:
+Node #665 at (l=0.0, t=430.0, r=1344.0, b=2920.0)px, Tag: 'machine-list'
+CollectionInfo = 'androidx.compose.ui.semantics.CollectionInfo@22cb9b3'
+IsTraversalGroup = 'true'
+VerticalScrollAxisRange = 'ScrollAxisRange(value=138.0, maxValue=138.0, reverseScrolling=false)'
+Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+Has 5 children, 3 siblings
+Selector used: (TestTag = 'machine-list')
+
+	at androidx.compose.ui.test.ActionsKt.performScrollToNode(Actions.kt:257)
+	at dev.local.opencodecompanion.connected.ConnectedHostTest.setup(ConnectedHostTest.kt:70)
+	at dev.local.opencodecompanion.connected.ConnectedHostTest.readingPositionSurvivesRecreation(ConnectedHostTest.kt:192)
+
+FAILURES!!!
+Tests run: 4,  Failures: 1
+
+
+INSTRUMENTATION_CODE: -1

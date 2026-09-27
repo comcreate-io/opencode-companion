@@ -1,6 +1,6 @@
 # Candidate host setup
 
-Candidate walkthrough, 2026-09-27. Manual HTTPS setup and per-machine shared-password acknowledgement are implemented; unknown/different host builds fail closed. [Testing handoff](TESTING.md) identifies the current 0.1.1 candidate and [accessibility evidence](evidence/M3/accessibility/REPORT.md) records its checks. The [connected report](evidence/M3/connected/REPORT.md) covers historical 0.1.0 emulator/Pixel fixture success, not current physical or real-network acceptance. The intended host and disposable path are still to be supplied. This guide does not provision a tunnel or establish production acceptance.
+Candidate walkthrough, 2026-09-27. Manual HTTPS setup and per-machine shared-password acknowledgement are implemented; unknown/different host builds fail closed. [Testing handoff](TESTING.md) identifies 0.1.1, and [Pixel evidence](evidence/M3/accessibility/pixel/REPORT.md) records 14 passing native USB-forwarded HTTPS fixture checks on its unchanged app APK. This is separate from an actual-host/tunnel or real-network acceptance run. Historical [0.1.0 evidence](evidence/M3/connected/REPORT.md), including 25 platform checks, is not a new storage test run. The intended host and disposable path remain to be supplied. This guide provisions no tunnel and establishes no production acceptance.
 
 ## Before connecting
 
@@ -80,7 +80,7 @@ Re-enter the credential on the **existing machine** using **Update password**. T
 
 Resolve unknown/outstanding sends before a planned rotation: the app blocks password replacement while an outgoing intent is unresolved. If the host credential was already revoked and reconciliation is impossible, leave the intent blocked and inspect its outcome directly on the host. This candidate requires manual recovery for that case; it has no automatic override, discard or resend. Do not restore a revoked credential to bypass the block.
 
-Local unit/platform/native replacement checks passed for the 0.1.0 baseline; the 0.1.1 native credential-replacement regression also passed on the emulator. Actual-host rotation/re-pair acceptance remains open. The feature does not add per-device revocation: every client sharing the old host password loses access when it is revoked. Removing local host access must never delete remote sessions.
+Local unit/platform/native replacement checks passed for the 0.1.0 baseline; the 0.1.1 native credential-replacement regression also passed on emulator and Pixel (see the Pixel report). Actual-host rotation/re-pair acceptance remains open. The feature does not add per-device revocation: every client sharing the old host password loses access when it is revoked. Removing local host access must never delete remote sessions.
 
 ## What is and is not established
 

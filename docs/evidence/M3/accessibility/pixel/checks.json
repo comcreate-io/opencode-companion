@@ -1,0 +1,139 @@
+{
+  "observed": "2026-09-27",
+  "applicationSource": "686367d65f4da6744f8988ea60b1bebfce5e620b",
+  "version": "0.1.1-dev-candidate",
+  "versionCode": 2,
+  "appApkSha256": "bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9",
+  "nativeTotal": 14,
+  "runs": [
+    {
+      "suite": "core",
+      "tests": 4,
+      "status": "pass",
+      "log": "core.txt",
+      "target": {
+        "kind": "usb",
+        "model": "Pixel 8 Pro",
+        "api": 36,
+        "appApkSha256": "bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9",
+        "testApkSha256": "ff7efd485a8e4278825c2b307da99f8377ab8b619db2318d08adfd3350665987"
+      },
+      "instrumentationSource": "e15d30aea20533ff341748cff790c18e7f89f593"
+    },
+    {
+      "suite": "layout",
+      "tests": 2,
+      "status": "pass",
+      "log": "layout.txt",
+      "target": {
+        "kind": "usb",
+        "model": "Pixel 8 Pro",
+        "api": 36,
+        "appApkSha256": "bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9",
+        "testApkSha256": "35a3feee80a09b295271910fba1dd1519ffb4b45abfc148b7d675bfc8511d034"
+      },
+      "instrumentationSource": "686367d65f4da6744f8988ea60b1bebfce5e620b"
+    },
+    {
+      "suite": "question",
+      "tests": 2,
+      "status": "pass",
+      "log": "question.txt",
+      "target": {
+        "kind": "usb",
+        "model": "Pixel 8 Pro",
+        "api": 36,
+        "appApkSha256": "bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9",
+        "testApkSha256": "35a3feee80a09b295271910fba1dd1519ffb4b45abfc148b7d675bfc8511d034"
+      },
+      "instrumentationSource": "686367d65f4da6744f8988ea60b1bebfce5e620b"
+    },
+    {
+      "suite": "twohost",
+      "tests": 1,
+      "status": "pass",
+      "log": "twohost.txt",
+      "target": {
+        "kind": "usb",
+        "model": "Pixel 8 Pro",
+        "api": 36,
+        "appApkSha256": "bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9",
+        "testApkSha256": "35a3feee80a09b295271910fba1dd1519ffb4b45abfc148b7d675bfc8511d034"
+      },
+      "instrumentationSource": "686367d65f4da6744f8988ea60b1bebfce5e620b"
+    },
+    {
+      "suite": "process",
+      "tests": 2,
+      "status": "pass",
+      "log": "process.txt",
+      "target": {
+        "kind": "usb",
+        "model": "Pixel 8 Pro",
+        "api": 36,
+        "appApkSha256": "bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9",
+        "testApkSha256": "35a3feee80a09b295271910fba1dd1519ffb4b45abfc148b7d675bfc8511d034"
+      },
+      "instrumentationSource": "686367d65f4da6744f8988ea60b1bebfce5e620b"
+    },
+    {
+      "suite": "credential",
+      "tests": 1,
+      "status": "pass",
+      "log": "credential.txt",
+      "target": {
+        "kind": "usb",
+        "model": "Pixel 8 Pro",
+        "api": 36,
+        "appApkSha256": "bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9",
+        "testApkSha256": "35a3feee80a09b295271910fba1dd1519ffb4b45abfc148b7d675bfc8511d034"
+      },
+      "instrumentationSource": "686367d65f4da6744f8988ea60b1bebfce5e620b"
+    },
+    {
+      "suite": "permission",
+      "tests": 1,
+      "status": "pass",
+      "log": "permission.txt",
+      "target": {
+        "kind": "usb",
+        "model": "Pixel 8 Pro",
+        "api": 36,
+        "appApkSha256": "bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9",
+        "testApkSha256": "35a3feee80a09b295271910fba1dd1519ffb4b45abfc148b7d675bfc8511d034"
+      },
+      "instrumentationSource": "686367d65f4da6744f8988ea60b1bebfce5e620b"
+    },
+    {
+      "suite": "contrast",
+      "tests": 1,
+      "status": "pass",
+      "log": "contrast.txt",
+      "target": {
+        "kind": "usb",
+        "model": "Pixel 8 Pro",
+        "api": 36,
+        "appApkSha256": "bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9",
+        "testApkSha256": "35a3feee80a09b295271910fba1dd1519ffb4b45abfc148b7d675bfc8511d034"
+      },
+      "instrumentationSource": "686367d65f4da6744f8988ea60b1bebfce5e620b",
+      "targetEvidence": "separate direct instrumentation invocation after permission suite, before test APK rebuild"
+    }
+  ],
+  "initialCore": {
+    "tests": 4,
+    "passed": 3,
+    "failed": 1,
+    "log": "initial-core-failure.txt",
+    "failure": "machine setup before reading assertions; Save callback did not run"
+  },
+  "transport": "owned USB ADB reverse to disposable HTTPS OpenCode 1.18.32; deterministic loopback provider",
+  "unverified": [
+    "real host/tunnel",
+    "Wi-Fi/cellular recovery",
+    "paid provider",
+    "manual TalkBack",
+    "layout approval",
+    "all Android versions/orientations"
+  ]
+}
