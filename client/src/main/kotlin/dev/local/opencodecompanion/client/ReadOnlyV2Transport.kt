@@ -214,10 +214,7 @@ class ReadOnlyV2Transport private constructor(baseClient: OkHttpClient) {
             } catch (_: SSLException) {
                 return ReadResult.Failure(ReadFailure.TlsRejected)
             } catch (error: IOException) {
-                val tlsCause =
-                    generateSequence(error as Throwable?) { it.cause }
-                        .take(8)
-                        .any { it is SSLException }
+                val tlsCause = V2HttpBoundary.hasTlsFailure(error)
                 return ReadResult.Failure(
                     if (tlsCause) ReadFailure.TlsRejected else ReadFailure.TransportUnavailable
                 )

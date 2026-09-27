@@ -20,7 +20,13 @@ object V2Transcript {
         val root = root(body)
         val items = root.array("data")
         if (items.size > 100) invalid("history page exceeds event limit")
-        return TranscriptPage(items.map { event(it.toString(), expected) }, root.boolean("hasMore"))
+        return TranscriptPage(
+            items.map { item ->
+                val rawJson = item.toString()
+                TranscriptRecord(rawJson, event(rawJson, expected))
+            },
+            root.boolean("hasMore"),
+        )
     }
 
     fun event(body: String, expected: SessionKey): TranscriptDecode {
@@ -241,7 +247,13 @@ object V2Transcript {
 
 class TranscriptDecodeException(message: String) : IllegalArgumentException(message)
 
-data class TranscriptPage(val events: List<TranscriptDecode>, val hasMore: Boolean)
+/** Full bounded envelope for atomic raw journal storage alongside its validated interpretation. */
+data class TranscriptRecord(val rawJson: String, val decoded: TranscriptDecode)
+
+data class TranscriptPage(val records: List<TranscriptRecord>, val hasMore: Boolean) {
+    val events: List<TranscriptDecode>
+        get() = records.map { it.decoded }
+}
 
 sealed interface TranscriptDecode {
     data class Supported(val event: DurableTranscriptEvent) : TranscriptDecode

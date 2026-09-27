@@ -1,0 +1,203 @@
+[
+  {
+    "id": "evt_0e3aff938001eKAwxEITXGiPnG",
+    "type": "session.created",
+    "durable": {
+      "aggregateID": "ses_f1c5006ccffeROVVVxeVahcnoC",
+      "seq": 0,
+      "version": 1
+    },
+    "location": {
+      "directory": "/fixture/repo"
+    },
+    "data": {
+      "sessionID": "ses_f1c5006ccffeROVVVxeVahcnoC",
+      "info": {
+        "id": "ses_f1c5006ccffeROVVVxeVahcnoC",
+        "slug": "proud-rocket",
+        "projectID": "b7884a630dcbf8e39fac2c894a5c312d74dd4f10",
+        "directory": "/fixture/repo",
+        "path": "",
+        "cost": 0,
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        },
+        "title": "New session - 2026-09-27T16:25:55.768Z",
+        "agent": "build",
+        "model": {
+          "id": "fixture-model",
+          "providerID": "fixture"
+        },
+        "version": "1.18.32",
+        "time": {
+          "created": 1790526355768,
+          "updated": 1790526355768
+        }
+      }
+    }
+  },
+  {
+    "id": "evt_0e3aff93c00192yiYcgStQB15M",
+    "type": "session.next.prompt.admitted",
+    "durable": {
+      "aggregateID": "ses_f1c5006ccffeROVVVxeVahcnoC",
+      "seq": 1,
+      "version": 1
+    },
+    "location": {
+      "directory": "/fixture/repo"
+    },
+    "data": {
+      "timestamp": 1790526355772,
+      "sessionID": "ses_f1c5006ccffeROVVVxeVahcnoC",
+      "messageID": "msg_f4bab0ae3ac007fbc92c2687",
+      "prompt": {
+        "text": "STREAM_CASE"
+      },
+      "delivery": "steer"
+    }
+  },
+  {
+    "id": "evt_0e3aff94e0010vtg8s7reTCvZ7",
+    "type": "session.next.prompted",
+    "durable": {
+      "aggregateID": "ses_f1c5006ccffeROVVVxeVahcnoC",
+      "seq": 2,
+      "version": 1
+    },
+    "location": {
+      "directory": "/fixture/repo"
+    },
+    "data": {
+      "timestamp": 1790526355772,
+      "sessionID": "ses_f1c5006ccffeROVVVxeVahcnoC",
+      "messageID": "msg_f4bab0ae3ac007fbc92c2687",
+      "prompt": {
+        "text": "STREAM_CASE"
+      },
+      "delivery": "steer"
+    }
+  },
+  {
+    "id": "evt_0e3aff9ba002Q4n0Uog9yHv23I",
+    "type": "session.next.step.started",
+    "durable": {
+      "aggregateID": "ses_f1c5006ccffeROVVVxeVahcnoC",
+      "seq": 3,
+      "version": 1
+    },
+    "location": {
+      "directory": "/fixture/repo"
+    },
+    "data": {
+      "timestamp": 1790526355898,
+      "sessionID": "ses_f1c5006ccffeROVVVxeVahcnoC",
+      "assistantMessageID": "msg_0e3aff9ba001zvGZg1xyD1X6nF",
+      "agent": "build",
+      "model": {
+        "id": "fixture-model",
+        "providerID": "fixture",
+        "variant": "default"
+      }
+    }
+  },
+  {
+    "id": "evt_0e3aff9bc001WG9oPHLUe7K20L",
+    "type": "session.next.text.started",
+    "durable": {
+      "aggregateID": "ses_f1c5006ccffeROVVVxeVahcnoC",
+      "seq": 4,
+      "version": 1
+    },
+    "location": {
+      "directory": "/fixture/repo"
+    },
+    "data": {
+      "timestamp": 1790526355900,
+      "sessionID": "ses_f1c5006ccffeROVVVxeVahcnoC",
+      "assistantMessageID": "msg_0e3aff9ba001zvGZg1xyD1X6nF",
+      "textID": "text-0"
+    }
+  },
+  {
+    "id": "evt_0e3aff9be001FrDGZ3FnD7eMDI",
+    "type": "session.next.text.delta",
+    "location": {
+      "directory": "/fixture/repo"
+    },
+    "data": {
+      "timestamp": 1790526355902,
+      "sessionID": "ses_f1c5006ccffeROVVVxeVahcnoC",
+      "assistantMessageID": "msg_0e3aff9ba001zvGZg1xyD1X6nF",
+      "textID": "text-0",
+      "delta": "Fixture "
+    }
+  },
+  {
+    "id": "evt_0e3aff9be002rFBL89DC5bWgCH",
+    "type": "session.next.text.delta",
+    "location": {
+      "directory": "/fixture/repo"
+    },
+    "data": {
+      "timestamp": 1790526355902,
+      "sessionID": "ses_f1c5006ccffeROVVVxeVahcnoC",
+      "assistantMessageID": "msg_0e3aff9ba001zvGZg1xyD1X6nF",
+      "textID": "text-0",
+      "delta": "complete."
+    }
+  },
+  {
+    "id": "evt_0e3aff9be003uTEJcQw2YQJG8S",
+    "type": "session.next.text.ended",
+    "durable": {
+      "aggregateID": "ses_f1c5006ccffeROVVVxeVahcnoC",
+      "seq": 5,
+      "version": 1
+    },
+    "location": {
+      "directory": "/fixture/repo"
+    },
+    "data": {
+      "timestamp": 1790526355902,
+      "sessionID": "ses_f1c5006ccffeROVVVxeVahcnoC",
+      "assistantMessageID": "msg_0e3aff9ba001zvGZg1xyD1X6nF",
+      "textID": "text-0",
+      "text": "Fixture complete."
+    }
+  },
+  {
+    "id": "evt_0e3aff9c000136z0n8SzJVzDwy",
+    "type": "session.next.step.ended",
+    "durable": {
+      "aggregateID": "ses_f1c5006ccffeROVVVxeVahcnoC",
+      "seq": 6,
+      "version": 2
+    },
+    "location": {
+      "directory": "/fixture/repo"
+    },
+    "data": {
+      "timestamp": 1790526355904,
+      "sessionID": "ses_f1c5006ccffeROVVVxeVahcnoC",
+      "assistantMessageID": "msg_0e3aff9ba001zvGZg1xyD1X6nF",
+      "finish": "stop",
+      "cost": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      }
+    }
+  }
+]

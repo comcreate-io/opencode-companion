@@ -5,6 +5,7 @@ import argparse, base64, hashlib, http.client, json, os, secrets, socket, subpro
 import tempfile, threading, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from urllib.parse import urlencode
 
 if not __debug__:
     raise SystemExit("This probe requires Python assertions; do not run with -O or PYTHONOPTIMIZE")
@@ -63,7 +64,7 @@ def main():
                 if length > 2_000_000:
                     self.send_error(413)
                     return
-                if self.path != "/v1/chat/completions" or len(requests) >= 12:
+                if self.path != "/v1/chat/completions" or len(requests) >= 16:
                     self.send_error(400)
                     return
                 body = json.loads(self.rfile.read(length))
@@ -297,7 +298,8 @@ def main():
                     time.sleep(0.1)
             else:
                 raise RuntimeError("Host readiness timeout")
-            models = call("GET", "/api/model")["data"]
+            model_envelope = call("GET", "/api/model")
+            models = model_envelope["data"]
             selected = [m for m in models if m["providerID"] == "fixture"]
             save("model.json", selected)
             assert len(selected) == 1, "Fixture model missing; no prompt sent"
@@ -306,6 +308,36 @@ def main():
                 == config["provider"]["fixture"]["options"]["baseURL"]
             )
             record("explicit loopback provider verified before execution")
+            agents = call("GET", "/api/agent")
+            assert any(a["id"] == "build" for a in agents["data"])
+            save("agents.json", {"location": agents["location"], "data": [
+                {k: v for k, v in a.items() if k in ("id", "description", "mode", "hidden", "model", "color")}
+                for a in agents["data"]
+            ]})
+            # Persist only display/selection fields: real catalog API config may contain secrets.
+            save("model-catalog.json", {"location": model_envelope["location"], "data": [
+                {k: v for k, v in m.items() if k not in ("api", "request")}
+                for m in selected
+            ]})
+            location = call("GET", "/api/location")
+            assert location["directory"] == str(root / "repo")
+            nested = root / "repo" / "nested"
+            nested.mkdir()
+            resolved = call("GET", "/api/location?" + urlencode({"location[directory]": str(nested)}))
+            assert resolved["directory"] == str(nested)
+            assert resolved["project"]["id"] == location["project"]["id"]
+            save("location.json", resolved)
+            requested_sid = "ses_" + secrets.token_hex(13)
+            created = call("POST", "/api/session", {
+                "id": requested_sid, "location": {"directory": str(nested)},
+                "agent": "build", "model": {"providerID": "fixture", "id": "fixture-model"},
+            })["data"]
+            assert created["id"] == requested_sid
+            assert created["location"]["directory"] == str(nested)
+            assert call("GET", f"/api/session/{requested_sid}")["data"] == created
+            save("explicit-location-session.json", created)
+            record("agent catalog, deep-object location and explicit session identity")
+
             stream_connection = http.client.HTTPConnection(
                 "127.0.0.1", port, timeout=20
             )
@@ -387,6 +419,55 @@ def main():
                 if m["role"] == "tool"
             )
             record("read tool executes only against disposable fixture file")
+            # Replay the captured tool run, then observe a new turn on the same live stream.
+            durable_connection = http.client.HTTPConnection("127.0.0.1", port, timeout=15)
+            durable_connection.request("GET", f"/api/session/{sid}/event?after=0", headers={"Authorization": auth})
+            durable_response = durable_connection.getresponse()
+            assert durable_response.status == 200
+            assert "text/event-stream" in durable_response.getheader("Content-Type", "")
+
+            def durable_frame():
+                lines, total = [], 0
+                while total <= 1_048_576:
+                    line = durable_response.readline(1_048_577)
+                    if not line:
+                        raise RuntimeError("Durable stream closed before frame")
+                    total += len(line)
+                    if line in (b"\n", b"\r\n"):
+                        payload = "\n".join(x[5:].lstrip(" ") for x in lines if x.startswith("data:"))
+                        if payload:
+                            return json.loads(payload)
+                        lines = []
+                    else:
+                        lines.append(line.decode().rstrip("\r\n"))
+                raise RuntimeError("Durable frame exceeded probe budget")
+
+            try:
+                replayed = [durable_frame() for _ in events["data"]]
+                assert replayed == events["data"]
+                after = replayed[-1]["durable"]["seq"]
+                admission = call("POST", f"/api/session/{sid}/prompt", {
+                    "id": "msg_" + secrets.token_hex(12),
+                    "prompt": {"text": "STREAM_CASE"}, "resume": True,
+                })
+                live_durable = []
+                for _ in range(30):
+                    event = durable_frame()
+                    live_durable.append(event)
+                    assert event["durable"]["seq"] == after + len(live_durable)
+                    if event["type"] in ("session.next.step.ended", "session.next.step.failed"):
+                        break
+                else:
+                    raise RuntimeError("Live durable turn exceeded bounded events")
+                wait_done(sid)
+                assert history(sid)["data"] == replayed + live_durable
+                assert live_durable[0]["data"]["messageID"] == admission["data"]["id"]
+                save("read-followup-history.json", history(sid))
+                record("complete tool replay crosses into live durable text without gaps")
+            finally:
+                durable_response.close()
+                durable_connection.close()
+
             sid = session("QUESTION_CASE")
             deadline = time.monotonic() + 15
             while time.monotonic() < deadline:
@@ -419,6 +500,34 @@ def main():
             wait_done(sid)
             save("question-history.json", history(sid))
             record("question exact-session reply and stale duplicate rejection")
+            sid = session("QUESTION_CASE")
+            deadline = time.monotonic() + 15
+            pending = []
+            while time.monotonic() < deadline:
+                pending = call("GET", f"/api/session/{sid}/question")["data"]
+                if pending:
+                    break
+                time.sleep(0.1)
+            assert pending, "No rejectable question observed"
+            qid = pending[0]["id"]
+            call("POST", f"/api/session/{sid}/question/{qid}/reject", expected=204)
+            call("POST", f"/api/session/{sid}/question/{qid}/reject", expected=404)
+            deadline = time.monotonic() + 5
+            while time.monotonic() < deadline:
+                rejected_events = history(sid)
+                if any(e["type"] == "session.next.tool.failed" for e in rejected_events["data"]):
+                    break
+                time.sleep(0.05)
+            assert any(e["type"] == "session.next.tool.failed" for e in rejected_events["data"])
+            assert call("GET", f"/api/session/{sid}/question")["data"] == []
+            save("question-rejected-history.json", rejected_events)
+            # Reply acknowledgement is not a settled-step guarantee. Record actual active state.
+            save("question-rejection-state.json", {
+                "active": sid in call("GET", "/api/session/active")["data"],
+                "stepSettled": any(e["type"] in ("session.next.step.ended", "session.next.step.failed") for e in rejected_events["data"]),
+            })
+            record("question reject is acknowledged, removed and stale duplicate denied")
+
             sid = session("INTERRUPT_CASE")
             deadline = time.monotonic() + 10
             while time.monotonic() < deadline:

@@ -19,6 +19,15 @@ class V2TranscriptTest {
     @Test
     fun capturedTextHistoryRebuildsAndRepeatedReplayDoesNotAppend() {
         val (session, page) = fixture("text-history", "ses_f1e762078ffefza45uIYRBbAGq")
+        assertEquals(page.events.size, page.records.size)
+        for (record in page.records) {
+            val envelope = Json.parseToJsonElement(record.rawJson).jsonObject
+            assertTrue(envelope.containsKey("id"))
+            assertTrue(envelope.containsKey("type"))
+            assertTrue(envelope.containsKey("durable"))
+            assertTrue(envelope.containsKey("data"))
+            assertEquals(record.decoded, V2Transcript.event(record.rawJson, session))
+        }
         val state = replay(session, page)
         assertEquals(6, state.lastSequence)
         assertEquals("STREAM_CASE", state.prompts.values.single().text)
@@ -137,7 +146,7 @@ class V2TranscriptTest {
     @Test
     fun sourceConfirmedToolFailureShapeUsesSyntheticMutation() {
         val (session, page) = fixture("read-history", "ses_f1e761fe5ffeMbGHzT2Ys6zrqo")
-        val prefix = page.events.take(6)
+        val prefix = page.records.take(6)
         var state = replay(session, TranscriptPage(prefix, true))
         val success = (page.events[6] as TranscriptDecode.Supported).event
         val root = Json.parseToJsonElement(success.rawEvent()).jsonObject

@@ -1,0 +1,243 @@
+{
+  "data": [
+    {
+      "id": "evt_0e3affa2d0014yI1MCt6SS9Awj",
+      "type": "session.next.prompt.admitted",
+      "durable": {
+        "aggregateID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "seq": 1,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790526356013,
+        "sessionID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "messageID": "msg_20049326dc3a40c4d576c0b4",
+        "prompt": {
+          "text": "READ_CASE"
+        },
+        "delivery": "steer"
+      }
+    },
+    {
+      "id": "evt_0e3affa36001P5FoWNjiLf36n2",
+      "type": "session.next.prompted",
+      "durable": {
+        "aggregateID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "seq": 2,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790526356013,
+        "sessionID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "messageID": "msg_20049326dc3a40c4d576c0b4",
+        "prompt": {
+          "text": "READ_CASE"
+        },
+        "delivery": "steer"
+      }
+    },
+    {
+      "id": "evt_0e3affa8a002xo7uHnUry8dWYH",
+      "type": "session.next.step.started",
+      "durable": {
+        "aggregateID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "seq": 3,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790526356106,
+        "sessionID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "assistantMessageID": "msg_0e3affa8a001OPe1oRHFO8B48G",
+        "agent": "build",
+        "model": {
+          "id": "fixture-model",
+          "providerID": "fixture",
+          "variant": "default"
+        }
+      }
+    },
+    {
+      "id": "evt_0e3affa8b001Ys24n7xVhB2vPD",
+      "type": "session.next.tool.input.started",
+      "durable": {
+        "aggregateID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "seq": 4,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790526356107,
+        "sessionID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "assistantMessageID": "msg_0e3affa8a001OPe1oRHFO8B48G",
+        "callID": "call_read_fixture",
+        "name": "read"
+      }
+    },
+    {
+      "id": "evt_0e3affa8d001OTVYY0z0ZkJ0bs",
+      "type": "session.next.tool.input.ended",
+      "durable": {
+        "aggregateID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "seq": 5,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790526356109,
+        "sessionID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "assistantMessageID": "msg_0e3affa8a001OPe1oRHFO8B48G",
+        "callID": "call_read_fixture",
+        "text": "{\"path\": \"/fixture/repo/README.md\"}"
+      }
+    },
+    {
+      "id": "evt_0e3affa8e001VlvEbnTnQTB5xr",
+      "type": "session.next.tool.called",
+      "durable": {
+        "aggregateID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "seq": 6,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790526356110,
+        "sessionID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "assistantMessageID": "msg_0e3affa8a001OPe1oRHFO8B48G",
+        "callID": "call_read_fixture",
+        "tool": "read",
+        "input": {
+          "path": "/fixture/repo/README.md"
+        },
+        "provider": {
+          "executed": false
+        }
+      }
+    },
+    {
+      "id": "evt_0e3affa94001Jxk57MFtqalBfD",
+      "type": "session.next.tool.success",
+      "durable": {
+        "aggregateID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "seq": 7,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790526356116,
+        "sessionID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "assistantMessageID": "msg_0e3affa8a001OPe1oRHFO8B48G",
+        "callID": "call_read_fixture",
+        "structured": {
+          "uri": "file:///fixture/repo/README.md",
+          "name": "README.md",
+          "content": "M1_READ_MARKER\n",
+          "encoding": "utf8",
+          "mime": "text/markdown"
+        },
+        "content": [],
+        "outputPaths": [],
+        "provider": {
+          "executed": false
+        }
+      }
+    },
+    {
+      "id": "evt_0e3affa95001yix8HpJg5ewiqx",
+      "type": "session.next.step.ended",
+      "durable": {
+        "aggregateID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "seq": 8,
+        "version": 2
+      },
+      "data": {
+        "timestamp": 1790526356117,
+        "sessionID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "assistantMessageID": "msg_0e3affa8a001OPe1oRHFO8B48G",
+        "finish": "tool-calls",
+        "cost": 0,
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_0e3affafc002FbUWUmXHXHVRbw",
+      "type": "session.next.step.started",
+      "durable": {
+        "aggregateID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "seq": 9,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790526356220,
+        "sessionID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "assistantMessageID": "msg_0e3affafc001cRwURtdjrfYTiF",
+        "agent": "build",
+        "model": {
+          "id": "fixture-model",
+          "providerID": "fixture",
+          "variant": "default"
+        }
+      }
+    },
+    {
+      "id": "evt_0e3affafd001m6myBdTvDC7tTr",
+      "type": "session.next.text.started",
+      "durable": {
+        "aggregateID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "seq": 10,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790526356221,
+        "sessionID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "assistantMessageID": "msg_0e3affafc001cRwURtdjrfYTiF",
+        "textID": "text-0"
+      }
+    },
+    {
+      "id": "evt_0e3affaff001vapDL2XbhZRKT0",
+      "type": "session.next.text.ended",
+      "durable": {
+        "aggregateID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "seq": 11,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790526356223,
+        "sessionID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "assistantMessageID": "msg_0e3affafc001cRwURtdjrfYTiF",
+        "textID": "text-0",
+        "text": "Fixture complete."
+      }
+    },
+    {
+      "id": "evt_0e3affb00001o2a0Pb3cdtwfA2",
+      "type": "session.next.step.ended",
+      "durable": {
+        "aggregateID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "seq": 12,
+        "version": 2
+      },
+      "data": {
+        "timestamp": 1790526356224,
+        "sessionID": "ses_f1c5005dcffeF2sC1jjl1RxlIh",
+        "assistantMessageID": "msg_0e3affafc001cRwURtdjrfYTiF",
+        "finish": "stop",
+        "cost": 0,
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    }
+  ],
+  "hasMore": false
+}

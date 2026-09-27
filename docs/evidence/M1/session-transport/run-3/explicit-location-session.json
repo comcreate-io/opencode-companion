@@ -1,0 +1,29 @@
+{
+  "id": "ses_c7514cdf8abe0bff8220a116a5",
+  "projectID": "b7884a630dcbf8e39fac2c894a5c312d74dd4f10",
+  "agent": "build",
+  "model": {
+    "id": "fixture-model",
+    "providerID": "fixture",
+    "variant": "default"
+  },
+  "cost": 0,
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "reasoning": 0,
+    "cache": {
+      "read": 0,
+      "write": 0
+    }
+  },
+  "time": {
+    "created": 1790526355749,
+    "updated": 1790526355749
+  },
+  "title": "New session - 2026-09-27T16:25:55.749Z",
+  "location": {
+    "directory": "/fixture/repo/nested"
+  },
+  "subpath": "nested"
+}

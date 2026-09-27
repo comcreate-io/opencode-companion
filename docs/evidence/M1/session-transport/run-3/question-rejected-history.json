@@ -1,0 +1,148 @@
+{
+  "data": [
+    {
+      "id": "evt_0e3affc85001p45ZEIixtogToR",
+      "type": "session.next.prompt.admitted",
+      "durable": {
+        "aggregateID": "ses_f1c500383ffeWrJ0LacU9sT9Hf",
+        "seq": 1,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790526356613,
+        "sessionID": "ses_f1c500383ffeWrJ0LacU9sT9Hf",
+        "messageID": "msg_c52cef96416fb48afa4ac69f",
+        "prompt": {
+          "text": "QUESTION_CASE"
+        },
+        "delivery": "steer"
+      }
+    },
+    {
+      "id": "evt_0e3affc8e001vAw5JB1lPw2wKV",
+      "type": "session.next.prompted",
+      "durable": {
+        "aggregateID": "ses_f1c500383ffeWrJ0LacU9sT9Hf",
+        "seq": 2,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790526356613,
+        "sessionID": "ses_f1c500383ffeWrJ0LacU9sT9Hf",
+        "messageID": "msg_c52cef96416fb48afa4ac69f",
+        "prompt": {
+          "text": "QUESTION_CASE"
+        },
+        "delivery": "steer"
+      }
+    },
+    {
+      "id": "evt_0e3affce7002MWYdqlkA1k6pNK",
+      "type": "session.next.step.started",
+      "durable": {
+        "aggregateID": "ses_f1c500383ffeWrJ0LacU9sT9Hf",
+        "seq": 3,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790526356711,
+        "sessionID": "ses_f1c500383ffeWrJ0LacU9sT9Hf",
+        "assistantMessageID": "msg_0e3affce7001s1QYPK0n3cag1r",
+        "agent": "build",
+        "model": {
+          "id": "fixture-model",
+          "providerID": "fixture",
+          "variant": "default"
+        }
+      }
+    },
+    {
+      "id": "evt_0e3affce8001Nd7x91Z4IOp4w2",
+      "type": "session.next.tool.input.started",
+      "durable": {
+        "aggregateID": "ses_f1c500383ffeWrJ0LacU9sT9Hf",
+        "seq": 4,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790526356712,
+        "sessionID": "ses_f1c500383ffeWrJ0LacU9sT9Hf",
+        "assistantMessageID": "msg_0e3affce7001s1QYPK0n3cag1r",
+        "callID": "call_question_fixture",
+        "name": "question"
+      }
+    },
+    {
+      "id": "evt_0e3affce9002wItIinozMkikVp",
+      "type": "session.next.tool.input.ended",
+      "durable": {
+        "aggregateID": "ses_f1c500383ffeWrJ0LacU9sT9Hf",
+        "seq": 5,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790526356713,
+        "sessionID": "ses_f1c500383ffeWrJ0LacU9sT9Hf",
+        "assistantMessageID": "msg_0e3affce7001s1QYPK0n3cag1r",
+        "callID": "call_question_fixture",
+        "text": "{\"questions\": [{\"question\": \"Continue fixture?\", \"header\": \"Fixture\", \"options\": [{\"label\": \"Yes\", \"description\": \"Continue test\"}]}]}"
+      }
+    },
+    {
+      "id": "evt_0e3affcea001LtuCcgXnLqZNbV",
+      "type": "session.next.tool.called",
+      "durable": {
+        "aggregateID": "ses_f1c500383ffeWrJ0LacU9sT9Hf",
+        "seq": 6,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790526356714,
+        "sessionID": "ses_f1c500383ffeWrJ0LacU9sT9Hf",
+        "assistantMessageID": "msg_0e3affce7001s1QYPK0n3cag1r",
+        "callID": "call_question_fixture",
+        "tool": "question",
+        "input": {
+          "questions": [
+            {
+              "question": "Continue fixture?",
+              "header": "Fixture",
+              "options": [
+                {
+                  "label": "Yes",
+                  "description": "Continue test"
+                }
+              ]
+            }
+          ]
+        },
+        "provider": {
+          "executed": false
+        }
+      }
+    },
+    {
+      "id": "evt_0e3affcf8001zeWzS7lMN8yKb7",
+      "type": "session.next.tool.failed",
+      "durable": {
+        "aggregateID": "ses_f1c500383ffeWrJ0LacU9sT9Hf",
+        "seq": 7,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790526356727,
+        "sessionID": "ses_f1c500383ffeWrJ0LacU9sT9Hf",
+        "assistantMessageID": "msg_0e3affce7001s1QYPK0n3cag1r",
+        "callID": "call_question_fixture",
+        "error": {
+          "type": "unknown",
+          "message": "Tool execution interrupted"
+        },
+        "provider": {
+          "executed": false
+        }
+      }
+    }
+  ],
+  "hasMore": false
+}
