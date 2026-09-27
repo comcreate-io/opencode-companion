@@ -1,0 +1,3 @@
+PASS: installed candidate APK SHA-256 92aeb5ba58b5fdd355b4131e07a1cc7af3996786d03a5881aa7e16d42f166c31
+PASS: no USB reverse mappings remain
+PASS: ordinary app activity launched after instrumentation without clearing app data

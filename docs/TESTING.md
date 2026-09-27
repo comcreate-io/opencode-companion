@@ -35,8 +35,8 @@ The [connected evidence report](evidence/M3/connected/REPORT.md) owns exact revi
 
 - Implementation commit `10901c0` passed CI and 109 JVM tests: 46 protocol and 63 client. Debug, unsigned release and Android instrumentation APKs assembled. Lint reported no errors and 15 dependency-update warnings. A fresh source export and clean workspace build produced the identical APK listed above.
 - All 25 Room/Keystore platform tests passed on the isolated emulator and Carter's Pixel 8 Pro running Android 16 / API 36.
-- Emulator native runs passed three core scenarios, one two-host scenario, two process-restart instrumentation stages, one credential-update scenario and one permission scenario. Process recovery includes durable draft and credential reuse.
-- The exact candidate APK is installed on the Pixel; its installed APK checksum matches the handoff. Native interruption passed on an earlier build before the phone auto-locked. Full physical UI testing remains pending an unlocked device; database/Keystore success alone does not establish connected UI acceptance.
+- Emulator and Pixel native runs each passed three core scenarios, one two-host scenario, two process-restart instrumentation stages, one credential-update scenario and one permission scenario. Process recovery includes durable draft and credential reuse.
+- The exact candidate APK is installed on the Pixel; its installed APK checksum matches the handoff. All eight native fixture checks now pass on the unlocked Pixel over USB-forwarded HTTPS. These are disposable-host UI checks, separate from remote-network, accessibility and layout acceptance.
 
 These results do not establish a named tunnel, your remote model/provider path, cellular recovery, accessibility or all supported Android versions. The final artifact record must say which checks apply to its source revision.
 
