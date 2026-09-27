@@ -1,0 +1,259 @@
+{
+  "data": [
+    {
+      "id": "evt_0e188f43e001jJP55Q3l4rWi3D",
+      "type": "session.next.prompt.admitted",
+      "durable": {
+        "aggregateID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "seq": 1,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790490244158,
+        "sessionID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "messageID": "msg_11ffbec817e3bc875aa95cb8",
+        "prompt": {
+          "text": "QUESTION_CASE"
+        },
+        "delivery": "steer"
+      }
+    },
+    {
+      "id": "evt_0e188f448001P3WQdy0zsk0zsu",
+      "type": "session.next.prompted",
+      "durable": {
+        "aggregateID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "seq": 2,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790490244158,
+        "sessionID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "messageID": "msg_11ffbec817e3bc875aa95cb8",
+        "prompt": {
+          "text": "QUESTION_CASE"
+        },
+        "delivery": "steer"
+      }
+    },
+    {
+      "id": "evt_0e188f499002fVefzHH6waq3LH",
+      "type": "session.next.step.started",
+      "durable": {
+        "aggregateID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "seq": 3,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790490244249,
+        "sessionID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "assistantMessageID": "msg_0e188f499001HbUhizgYRYqtI4",
+        "agent": "build",
+        "model": {
+          "id": "fixture-model",
+          "providerID": "fixture",
+          "variant": "default"
+        }
+      }
+    },
+    {
+      "id": "evt_0e188f49a001mBbrfzWQflR3yT",
+      "type": "session.next.tool.input.started",
+      "durable": {
+        "aggregateID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "seq": 4,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790490244250,
+        "sessionID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "assistantMessageID": "msg_0e188f499001HbUhizgYRYqtI4",
+        "callID": "call_question_fixture",
+        "name": "question"
+      }
+    },
+    {
+      "id": "evt_0e188f49b002Ny12fFkmP0pNT7",
+      "type": "session.next.tool.input.ended",
+      "durable": {
+        "aggregateID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "seq": 5,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790490244251,
+        "sessionID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "assistantMessageID": "msg_0e188f499001HbUhizgYRYqtI4",
+        "callID": "call_question_fixture",
+        "text": "{\"questions\": [{\"question\": \"Continue fixture?\", \"header\": \"Fixture\", \"options\": [{\"label\": \"Yes\", \"description\": \"Continue test\"}]}]}"
+      }
+    },
+    {
+      "id": "evt_0e188f49c001KDHJ02WWcQMs1E",
+      "type": "session.next.tool.called",
+      "durable": {
+        "aggregateID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "seq": 6,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790490244252,
+        "sessionID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "assistantMessageID": "msg_0e188f499001HbUhizgYRYqtI4",
+        "callID": "call_question_fixture",
+        "tool": "question",
+        "input": {
+          "questions": [
+            {
+              "question": "Continue fixture?",
+              "header": "Fixture",
+              "options": [
+                {
+                  "label": "Yes",
+                  "description": "Continue test"
+                }
+              ]
+            }
+          ]
+        },
+        "provider": {
+          "executed": false
+        }
+      }
+    },
+    {
+      "id": "evt_0e188f4b40019dJl1bvNWvma98",
+      "type": "session.next.tool.success",
+      "durable": {
+        "aggregateID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "seq": 7,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790490244276,
+        "sessionID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "assistantMessageID": "msg_0e188f499001HbUhizgYRYqtI4",
+        "callID": "call_question_fixture",
+        "structured": {
+          "answers": [
+            [
+              "Yes"
+            ]
+          ]
+        },
+        "content": [
+          {
+            "type": "text",
+            "text": "User has answered your questions: \"Continue fixture?\"=\"Yes\". You can now continue with the user's answers in mind."
+          }
+        ],
+        "outputPaths": [],
+        "provider": {
+          "executed": false
+        }
+      }
+    },
+    {
+      "id": "evt_0e188f4b5001HvhpuIOeD01Vlq",
+      "type": "session.next.step.ended",
+      "durable": {
+        "aggregateID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "seq": 8,
+        "version": 2
+      },
+      "data": {
+        "timestamp": 1790490244277,
+        "sessionID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "assistantMessageID": "msg_0e188f499001HbUhizgYRYqtI4",
+        "finish": "tool-calls",
+        "cost": 0,
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_0e188f50e002NKEAqh10FCe7iB",
+      "type": "session.next.step.started",
+      "durable": {
+        "aggregateID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "seq": 9,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790490244366,
+        "sessionID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "assistantMessageID": "msg_0e188f50e001IbLc2UOvMsOHq6",
+        "agent": "build",
+        "model": {
+          "id": "fixture-model",
+          "providerID": "fixture",
+          "variant": "default"
+        }
+      }
+    },
+    {
+      "id": "evt_0e188f510001ddqU5Sx2aEJ3Ay",
+      "type": "session.next.text.started",
+      "durable": {
+        "aggregateID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "seq": 10,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790490244368,
+        "sessionID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "assistantMessageID": "msg_0e188f50e001IbLc2UOvMsOHq6",
+        "textID": "text-0"
+      }
+    },
+    {
+      "id": "evt_0e188f5110035t85aDLlk1amor",
+      "type": "session.next.text.ended",
+      "durable": {
+        "aggregateID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "seq": 11,
+        "version": 1
+      },
+      "data": {
+        "timestamp": 1790490244369,
+        "sessionID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "assistantMessageID": "msg_0e188f50e001IbLc2UOvMsOHq6",
+        "textID": "text-0",
+        "text": "Fixture complete."
+      }
+    },
+    {
+      "id": "evt_0e188f512001X2FSmsuWnk9p3M",
+      "type": "session.next.step.ended",
+      "durable": {
+        "aggregateID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "seq": 12,
+        "version": 2
+      },
+      "data": {
+        "timestamp": 1790490244370,
+        "sessionID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+        "assistantMessageID": "msg_0e188f50e001IbLc2UOvMsOHq6",
+        "finish": "stop",
+        "cost": 0,
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    }
+  ],
+  "hasMore": false
+}

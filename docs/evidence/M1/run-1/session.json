@@ -1,0 +1,24 @@
+{
+  "data": {
+    "id": "ses_f1eae4fb4ffevgTGevR6cHTeFK",
+    "projectID": "global",
+    "cost": 0,
+    "tokens": {
+      "input": 0,
+      "output": 0,
+      "reasoning": 0,
+      "cache": {
+        "read": 0,
+        "write": 0
+      }
+    },
+    "time": {
+      "created": 1790486622296,
+      "updated": 1790486622296
+    },
+    "title": "New session - 2026-09-27T05:23:42.296Z",
+    "location": {
+      "directory": "/fixture/repo"
+    }
+  }
+}

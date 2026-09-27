@@ -1,0 +1,8 @@
+{
+  "action": "m1.synthetic.permission",
+  "id": "per_m1syntheticonce",
+  "resources": [
+    "m1://permission-fixture"
+  ],
+  "sessionID": "ses_f1e788b72ffe3VUPvd9gNTOV9L"
+}

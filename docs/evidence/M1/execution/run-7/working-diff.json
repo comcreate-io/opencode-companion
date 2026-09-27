@@ -1,0 +1,9 @@
+[
+  {
+    "file": "README.md",
+    "patch": "diff --git a/README.md b/README.md\nindex 5a64312..3447eaa 100644\n--- a/README.md\n+++ b/README.md\n@@ -1 +1,2 @@\n M1_READ_MARKER\n+M1_DIFF_MARKER\n",
+    "additions": 1,
+    "deletions": 0,
+    "status": "modified"
+  }
+]

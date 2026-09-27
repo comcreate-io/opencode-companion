@@ -1,0 +1,12 @@
+{
+  "data": {
+    "admittedSeq": 1,
+    "id": "msg_m1admission000000000001",
+    "sessionID": "ses_f1ea95481ffe0fUbbwjOHD9gJd",
+    "prompt": {
+      "text": "M1 synthetic admission only"
+    },
+    "delivery": "steer",
+    "timeCreated": 1790486949156
+  }
+}

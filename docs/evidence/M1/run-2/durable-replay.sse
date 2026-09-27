@@ -1,0 +1,2 @@
+data: {"id":"evt_0e152bc8b001yV53Lbdy1Q0rsR","type":"session.next.prompt.admitted","durable":{"aggregateID":"ses_f1ead451fffe0ApFRpmTF4onup","seq":1,"version":1},"data":{"timestamp":1790486690955,"sessionID":"ses_f1ead451fffe0ApFRpmTF4onup","messageID":"msg_m1admission000000000001","prompt":{"text":"M1 synthetic admission only"},"delivery":"steer"}}
+

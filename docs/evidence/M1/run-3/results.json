@@ -1,0 +1,56 @@
+{
+  "runtime": "1.18.32",
+  "binarySha256": "513f500a1a5ea1dc7d865547ac87b32a8936334e8d5abd5b3ff585c45a170080",
+  "transport": "loopback HTTP with disposable Basic auth",
+  "modelExecution": false,
+  "cases": [
+    {
+      "case": "authenticated health; absent and wrong credentials rejected",
+      "status": "pass"
+    },
+    {
+      "case": "V2 route schema present; unknown GET is HTML 200, not API success",
+      "status": "pass"
+    },
+    {
+      "case": "create, list and read isolated session",
+      "status": "pass"
+    },
+    {
+      "case": "location file list/read and agent/model catalog reads",
+      "status": "pass"
+    },
+    {
+      "case": "same-ID deduplication; changed payload/session conflict; exclusive history cursor",
+      "status": "pass"
+    },
+    {
+      "case": "durable SSE replay, live delivery and reconnect at exclusive cursor",
+      "status": "pass"
+    },
+    {
+      "case": "global SSE connected frame has no SSE replay ID",
+      "status": "pass"
+    },
+    {
+      "case": "dropped prompt response reconciled from durable history without resend",
+      "status": "pass"
+    },
+    {
+      "case": "history limits, idle interrupt, empty request lists and stale replies",
+      "status": "pass"
+    },
+    {
+      "case": "host restart preserves admission/history and deduplication",
+      "status": "pass"
+    }
+  ],
+  "notRun": [
+    "real model output and tool execution",
+    "pending permission/question races",
+    "TLS/tunnel",
+    "per-device revocation",
+    "Android transport/lifecycle",
+    "changed-file/diff contract"
+  ]
+}

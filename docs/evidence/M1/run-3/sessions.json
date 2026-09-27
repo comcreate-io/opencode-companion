@@ -1,0 +1,52 @@
+{
+  "data": [
+    {
+      "id": "ses_f1ea952cfffeKNzh7mPhKerJvM",
+      "projectID": "global",
+      "cost": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "time": {
+        "created": 1790486949174,
+        "updated": 1790486949174
+      },
+      "title": "New session - 2026-09-27T05:29:09.174Z",
+      "location": {
+        "directory": "/fixture/repo"
+      }
+    },
+    {
+      "id": "ses_f1ea95481ffe0fUbbwjOHD9gJd",
+      "projectID": "global",
+      "cost": 0,
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "time": {
+        "created": 1790486948747,
+        "updated": 1790486948747
+      },
+      "title": "New session - 2026-09-27T05:29:08.747Z",
+      "location": {
+        "directory": "/fixture/repo"
+      }
+    }
+  ],
+  "cursor": {
+    "previous": "eyJhbmNob3IiOnsiaWQiOiJzZXNfZjFlYTk1MmNmZmZlS056aDdtUGhLZXJKdk0iLCJ0aW1lIjoxNzkwNDg2OTQ5MTc0LCJkaXJlY3Rpb24iOiJwcmV2aW91cyJ9fQ",
+    "next": "eyJhbmNob3IiOnsiaWQiOiJzZXNfZjFlYTk1NDgxZmZlMGZVYmJ3ak9IRDlnSmQiLCJ0aW1lIjoxNzkwNDg2OTQ4NzQ3LCJkaXJlY3Rpb24iOiJuZXh0In19"
+  }
+}

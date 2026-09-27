@@ -1,0 +1,22 @@
+[
+  {
+    "id": "que_0e188f49e001aVn775FzIoAk8v",
+    "sessionID": "ses_f1e770bcaffe0Cs7l2WhRwrIvS",
+    "questions": [
+      {
+        "question": "Continue fixture?",
+        "header": "Fixture",
+        "options": [
+          {
+            "label": "Yes",
+            "description": "Continue test"
+          }
+        ]
+      }
+    ],
+    "tool": {
+      "messageID": "msg_0e188f499001HbUhizgYRYqtI4",
+      "callID": "call_question_fixture"
+    }
+  }
+]
