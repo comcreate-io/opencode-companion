@@ -6,9 +6,11 @@ import dev.local.opencodecompanion.protocol.SessionKey
 import dev.local.opencodecompanion.protocol.SseDecodeFailure
 import dev.local.opencodecompanion.protocol.V2GlobalEvent
 import dev.local.opencodecompanion.protocol.transcript.TranscriptDecode
+import java.time.Duration
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
@@ -24,6 +26,8 @@ import okhttp3.tls.HeldCertificate
 import okio.Buffer
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -219,6 +223,65 @@ class SessionV2StreamsTest {
             (results.first() as StreamResult.Item<V2GlobalEvent>).value,
         )
         assertTrue(results.last() is StreamResult.Eof)
+    }
+
+    @Test
+    fun idleDurableHeadersAndBodyOutliveGlobalTimeoutAndRemainCancellable() = runBlocking {
+        val shortIdle = SessionV2Streams.forTests(trustedClient, Duration.ofMillis(100))
+        for (beforeHeaders in listOf(true, false)) {
+            val response = sse(frame(durableJson())).newBuilder()
+            if (beforeHeaders) response.headersDelay(5, TimeUnit.SECONDS)
+            else response.bodyDelay(5, TimeUnit.SECONDS)
+            server.enqueue(response.build())
+            val waiting = async { shortIdle.durable(destination, session, 0).toList() }
+            try {
+                assertNotNull(
+                    withContext(Dispatchers.IO) { server.takeRequest(5, TimeUnit.SECONDS) }
+                )
+                delay(500)
+                assertFalse("A quiet durable subscription must remain open", waiting.isCompleted)
+                assertTrue(shortIdle.runningCallsForTests() > 0)
+            } finally {
+                withTimeout(2_000) { waiting.cancelAndJoin() }
+            }
+            withTimeout(2_000) { while (shortIdle.runningCallsForTests() != 0) delay(10) }
+        }
+    }
+
+    @Test
+    fun globalStillTimesOutBeforeHeadersAndDuringIdleBody() = runBlocking {
+        val shortIdle = SessionV2Streams.forTests(trustedClient, Duration.ofMillis(100))
+        for (beforeHeaders in listOf(true, false)) {
+            val response = sse(frame(connectedJson())).newBuilder()
+            if (beforeHeaders) response.headersDelay(5, TimeUnit.SECONDS)
+            else response.bodyDelay(5, TimeUnit.SECONDS)
+            server.enqueue(response.build())
+            val result = withTimeout(3_000) { shortIdle.global(destination).first() }
+            if (beforeHeaders) {
+                assertEquals(
+                    StreamFailure.Http(ReadFailure.TransportUnavailable),
+                    (result as StreamResult.Failure).reason,
+                )
+            } else assertTrue(result is StreamResult.Disconnected)
+            withTimeout(2_000) { while (shortIdle.runningCallsForTests() != 0) delay(10) }
+        }
+    }
+
+    @Test
+    fun productionTimeoutPoliciesKeepFiniteAndGlobalRequestsBounded() {
+        val finite = V2HttpBoundary.harden(trustedClient, V2HttpBoundary.Lifetime.FINITE)
+        val global = V2HttpBoundary.harden(trustedClient, V2HttpBoundary.Lifetime.GLOBAL_STREAM)
+        val durable = V2HttpBoundary.harden(trustedClient, V2HttpBoundary.Lifetime.DURABLE_STREAM)
+        assertEquals(10_000, finite.readTimeoutMillis)
+        assertEquals(20_000, finite.callTimeoutMillis)
+        assertEquals(30_000, global.readTimeoutMillis)
+        assertEquals(0, global.callTimeoutMillis)
+        assertEquals(0, durable.readTimeoutMillis)
+        assertEquals(0, durable.callTimeoutMillis)
+        for (client in listOf(finite, global, durable)) assertEquals(
+            5_000,
+            client.connectTimeoutMillis,
+        )
     }
 
     @Test

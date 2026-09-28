@@ -294,6 +294,7 @@ class SessionCoordinator(
     private val settlingRequests = mutableSetOf<Pair<SessionKey, String>>()
     private val draftLocks = ConcurrentHashMap<DraftKey, Mutex>()
     private val initializationLock = Mutex()
+    private val journalLocks = ConcurrentHashMap<SessionKey, Mutex>()
     private val rotationRecoveryRequired = mutableSetOf<MachineId>()
     private val rotatingMachines = mutableSetOf<MachineId>()
     private var startupReconciled = false
@@ -1255,54 +1256,59 @@ class SessionCoordinator(
         destination: ReadDestination,
         key: SessionKey,
         stamp: Long,
-    ): Boolean {
-        var cursor = store.cursor(key)
-        repeat(100) {
-            val result = host.history(destination, key, cursor)
-            val page =
-                when (result) {
-                    is ReadResult.Failure -> {
-                        failIfCurrent(stamp, SessionProblem.Transport(result.reason))
+    ): Boolean =
+        journalLocks
+            .computeIfAbsent(key) { Mutex() }
+            .withLock {
+                if (stamp != epoch || !mutable.value.foreground) return false
+                var cursor = store.cursor(key)
+                repeat(100) {
+                    val result = host.history(destination, key, cursor)
+                    val page =
+                        when (result) {
+                            is ReadResult.Failure -> {
+                                failIfCurrent(stamp, SessionProblem.Transport(result.reason))
+                                return false
+                            }
+                            is ReadResult.Success -> result.value
+                        }
+                    if (stamp != epoch || !mutable.value.foreground) return false
+                    if (page.records.any { it.decoded !is TranscriptDecode.Supported }) {
+                        failIfCurrent(stamp, SessionProblem.ProtocolUnsupported)
                         return false
                     }
-                    is ReadResult.Success -> result.value
-                }
-            if (stamp != epoch || !mutable.value.foreground) return false
-            if (page.records.any { it.decoded !is TranscriptDecode.Supported }) {
-                failIfCurrent(stamp, SessionProblem.ProtocolUnsupported)
-                return false
-            }
-            if (page.records.isNotEmpty()) {
-                cursor = store.commitEvents(key, cursor, page.records.map { it.rawJson })
-                val transcript = reconstruct(key)
-                if (stamp == epoch) {
-                    val ended =
-                        page.events.mapNotNull {
-                            (it as? TranscriptDecode.Supported)?.event?.kind as? Kind.TextEnded
+                    if (page.records.isNotEmpty()) {
+                        cursor = store.commitEvents(key, cursor, page.records.map { it.rawJson })
+                        val transcript = reconstruct(key)
+                        if (stamp == epoch) {
+                            val ended =
+                                page.events.mapNotNull {
+                                    (it as? TranscriptDecode.Supported)?.event?.kind
+                                        as? Kind.TextEnded
+                                }
+                            val keys = ended.map { V2TextKey(key, it.messageId, it.textId) }.toSet()
+                            mutable.value =
+                                mutable.value.copy(
+                                    transcript = transcript,
+                                    transientText =
+                                        mutable.value.transientText.copy(
+                                            fragments = mutable.value.transientText.fragments - keys
+                                        ),
+                                )
                         }
-                    val keys = ended.map { V2TextKey(key, it.messageId, it.textId) }.toSet()
-                    mutable.value =
-                        mutable.value.copy(
-                            transcript = transcript,
-                            transientText =
-                                mutable.value.transientText.copy(
-                                    fragments = mutable.value.transientText.fragments - keys
-                                ),
-                        )
+                    }
+                    if (!page.hasMore) {
+                        reconcileAdmissions(destination, key)
+                        return true
+                    }
+                    if (page.records.isEmpty()) {
+                        failIfCurrent(stamp, SessionProblem.ProtocolUnsupported)
+                        return false
+                    }
                 }
-            }
-            if (!page.hasMore) {
-                reconcileAdmissions(destination, key)
-                return true
-            }
-            if (page.records.isEmpty()) {
                 failIfCurrent(stamp, SessionProblem.ProtocolUnsupported)
                 return false
             }
-        }
-        failIfCurrent(stamp, SessionProblem.ProtocolUnsupported)
-        return false
-    }
 
     private suspend fun collectLive(destination: ReadDestination, key: SessionKey, stamp: Long) {
         coroutineScope {
@@ -1338,6 +1344,8 @@ class SessionCoordinator(
             launch {
                 try {
                     refreshLoop(destination, key, stamp)
+                    // Failed authoritative reconciliation must stop both subscriptions too.
+                    this@coroutineScope.cancel()
                 } catch (cancelled: CancellationException) {
                     throw cancelled
                 } catch (_: Exception) {
@@ -1362,25 +1370,38 @@ class SessionCoordinator(
                             failIfCurrent(stamp, SessionProblem.ProtocolUnsupported)
                             throw UnsupportedDurable()
                         }
-                        val cursor = store.cursor(key)
-                        store.commitEvents(key, cursor, listOf(item.value.rawJson))
-                        val transcript = reconstruct(key)
-                        if (stamp == epoch) {
-                            val ended =
-                                (item.value.decoded as TranscriptDecode.Supported).event.kind
-                                    as? Kind.TextEnded
-                            val overlay =
-                                if (ended != null)
-                                    mutable.value.transientText.copy(
-                                        fragments =
-                                            mutable.value.transientText.fragments -
-                                                V2TextKey(key, ended.messageId, ended.textId)
-                                    )
-                                else mutable.value.transientText
-                            mutable.value =
-                                mutable.value.copy(transcript = transcript, transientText = overlay)
-                        }
-                        reconcileAdmissions(destination, key)
+                        journalLocks
+                            .computeIfAbsent(key) { Mutex() }
+                            .withLock {
+                                if (stamp != epoch || !mutable.value.foreground) return@withLock
+                                val cursor = store.cursor(key)
+                                store.commitEvents(key, cursor, listOf(item.value.rawJson))
+                                val transcript = reconstruct(key)
+                                if (stamp == epoch) {
+                                    val ended =
+                                        (item.value.decoded as TranscriptDecode.Supported)
+                                            .event
+                                            .kind as? Kind.TextEnded
+                                    val overlay =
+                                        if (ended != null)
+                                            mutable.value.transientText.copy(
+                                                fragments =
+                                                    mutable.value.transientText.fragments -
+                                                        V2TextKey(
+                                                            key,
+                                                            ended.messageId,
+                                                            ended.textId,
+                                                        )
+                                            )
+                                        else mutable.value.transientText
+                                    mutable.value =
+                                        mutable.value.copy(
+                                            transcript = transcript,
+                                            transientText = overlay,
+                                        )
+                                }
+                                reconcileAdmissions(destination, key)
+                            }
                     }
                     is StreamResult.Failure -> {
                         val http =
@@ -1472,6 +1493,9 @@ class SessionCoordinator(
         while (stamp == epoch && mutable.value.foreground) {
             delay(2_000)
             if (stamp != epoch || !mutable.value.foreground) return
+            // A quiet durable route may also be selectively stalled. Reconcile its cursor
+            // through bounded finite reads before healthy status polls can publish Ready.
+            if (!replayHistory(destination, key, stamp)) return
             val active = host.active(destination)
             val permissions = host.permissions(destination, key)
             val questions = host.questions(destination, key)

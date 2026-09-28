@@ -240,7 +240,7 @@ private fun MachinesPage(
     var accepted by remember { mutableStateOf(false) }
     var editingCredential by remember { mutableStateOf<MachineId?>(null) }
     LazyColumn(
-        modifier.testTag("machine-list"),
+        modifier.fillMaxWidth().testTag("machine-list"),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
@@ -404,7 +404,7 @@ private fun SessionsPage(
     val c = CompanionTheme.colors
     val machine = state.machines.firstOrNull { it.id == state.selectedMachine }
     LazyColumn(
-        modifier.testTag("session-list"),
+        modifier.fillMaxWidth().testTag("session-list"),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
@@ -462,7 +462,7 @@ private fun NewSessionPage(
     var agent by remember(state.selectedMachine) { mutableStateOf<String?>(null) }
     var model by remember(state.selectedMachine) { mutableStateOf<V2ModelSelection?>(null) }
     LazyColumn(
-        modifier.testTag("session-catalog"),
+        modifier.fillMaxWidth().testTag("session-catalog"),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(5.dp),
     ) {
@@ -788,7 +788,7 @@ private fun ChangesPage(state: SessionUiState, modifier: Modifier, onBack: () ->
     val c = CompanionTheme.colors
     var expanded by remember(state.selectedSession) { mutableStateOf<String?>(null) }
     LazyColumn(
-        modifier,
+        modifier.fillMaxWidth(),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {

@@ -1,6 +1,6 @@
 # Candidate host setup
 
-Candidate walkthrough, 2026-09-27. Manual HTTPS setup and per-machine shared-password acknowledgement are implemented; unknown/different host builds fail closed. [Testing handoff](TESTING.md) identifies 0.1.1, and [Pixel evidence](evidence/M3/accessibility/pixel/REPORT.md) records 14 passing native USB-forwarded HTTPS fixture checks on its unchanged app APK. This is separate from an actual-host/tunnel or real-network acceptance run. Historical [0.1.0 evidence](evidence/M3/connected/REPORT.md), including 25 platform checks, is not a new storage test run. The intended host and disposable path remain to be supplied. This guide provisions no tunnel and establishes no production acceptance.
+Candidate walkthrough, updated 2026-09-28. Manual HTTPS setup and per-machine shared-password acknowledgement are implemented; unknown/different host builds fail closed. The owner has acknowledged the shared-password limitation and saved two private Tailscale real-host profiles with separate Basic passwords. Both showed Ready after authenticated checks against exact OpenCode 1.18.32. This does not establish per-device revocation or actual-host password rotation. [Testing handoff](TESTING.md) identifies the historical 0.1.1 artifact, and [Pixel evidence](evidence/M3/accessibility/pixel/REPORT.md) records 14 native USB-forwarded HTTPS fixture checks on that unchanged APK. The next candidate's evidence belongs in its own report; these observations do not re-label the older fixture run.
 
 ## Before connecting
 
@@ -9,7 +9,7 @@ Candidate walkthrough, 2026-09-27. Manual HTTPS setup and per-machine shared-pas
 - Candidate authentication is the host's shared Basic password, with username `opencode` unless you deliberately configured another. Accept the app's shared-credential limitation explicitly. This is owner access to the authenticated OpenCode API, not a restricted or independently revocable device credential.
 - Provider credentials stay on the host. The phone needs only host access credentials, stored through Android Keystore-backed encryption. Never place passwords in QR codes, URLs, source files, logs, screenshots or support exports.
 
-The [architecture](ARCHITECTURE.md#connection-and-authentication-decision-gate) remains the authority for D04 and the remote-write gate. The candidate records this choice per machine during setup; no acceptance for Carter's own hosts has been recorded in this development session.
+The [architecture](ARCHITECTURE.md#connection-and-authentication-decision-gate) remains the authority for D04 and the remote-write gate. The owner acknowledgement was recorded separately for each of the two real-host profiles; it is not an individually revocable device grant.
 
 ## 1. Prepare an isolated host
 
@@ -52,7 +52,29 @@ These HTTP checks stay on loopback. The phone uses HTTPS. A version response ide
 
 ## 2. Supply an authenticated HTTPS route
 
-Use an existing operator-configured HTTPS reverse proxy, or the preferred optional **named Cloudflare Tunnel**. No Cloudflare account, domain, credentials or tunnel has been provisioned for this candidate. Creating or changing those resources requires a separate authorized setup.
+Use an existing operator-configured HTTPS reverse proxy, private Tailscale Serve, or an optional **named Cloudflare Tunnel**. The two current real-host profiles use private Tailscale routes. Do not infer a public Cloudflare route from them. Creating or changing network resources requires a separately authorized setup.
+
+For Tailscale Serve, the phone and host must be on the same tailnet, with HTTPS certificates enabled and access allowed by tailnet policy. Keep OpenCode bound to authenticated loopback. Inspect `tailscale serve status --json` and confirm HTTPS port 8443 is unused before adding a route; preserve any existing port 443 service. [Tailscale Serve](https://tailscale.com/docs/features/tailscale-serve) and its [CLI reference](https://tailscale.com/docs/reference/tailscale-cli/serve) document this private reverse proxy and the flags below:
+
+```bash
+tailscale serve status --json
+tailscale serve --bg --https=8443 http://127.0.0.1:4096
+tailscale serve status --json
+```
+
+Use the reported `https://<node>.<tailnet>.ts.net:8443` root origin in the app, without a path prefix. Tailscale terminates TLS before forwarding to loopback; retain OpenCode Basic authentication. From another device in the same tailnet, substitute the reported root origin and verify without `-k` or redirects:
+
+```bash
+origin='https://<node>.<tailnet>.ts.net:8443'
+curl --silent --show-error --output /dev/null --write-out '%{http_code}\n' "$origin/global/health"
+# Required: 401.
+curl --fail --silent --show-error --user opencode "$origin/global/health"
+# Required JSON values: healthy=true and version="1.18.32".
+curl --no-buffer --include --max-time 5 --user opencode "$origin/api/event"
+# Required: 200, Content-Type: text/event-stream, then an initial connected event.
+```
+
+The bounded SSE command can exit on timeout because the stream stays open. Inspect its output locally; do not save event payloads or credentials in diagnostics. These checks establish the route, not model execution or password rotation. To remove only this mapping, use `tailscale serve --https=8443 off` after confirming its ownership; do not reset other Serve routes.
 
 For a named tunnel, confirm the intended account, domain and unused hostname before publishing. Follow [Cloudflare's setup instructions](https://developers.cloudflare.com/tunnel/get-started/); on NixOS configure `cloudflared` declaratively instead of running an imperative service installer. Keep its token in the host's secret store, outside Git and Nix store expressions. Route the dedicated hostname to `http://127.0.0.1:4096` on the **same host**. Leave OpenCode's password enabled. Do not expose port 4096 publicly. Cloudflare terminates public TLS, so this is not end-to-end encryption from phone to OpenCode.
 
@@ -86,4 +108,4 @@ Local unit/platform/native replacement checks passed for the 0.1.0 baseline; the
 
 Pinned runtime probes and local HTTPS fixture checks are recorded in [M1 runtime evidence](evidence/M1/REPORT.md) and [HTTPS transport evidence](evidence/M1/transport/REPORT.md). Those reports describe their own historical scope; the candidate handoff must identify later integrated checks and the exact APK.
 
-This guide does not claim a named tunnel, fresh-host installation, actual-host password rotation/re-pair or physical Android real-network acceptance passed. These remain separate observed gates. Run the candidate acceptance checklist before using important repositories; a successful local HTTPS test is not evidence of the untested tunnel or phone path.
+Two owner-approved private Tailscale profiles reached Ready against real 1.18.32 hosts. This guide does not claim a named Cloudflare tunnel, actual-host password rotation/re-pair, or complete physical Android network and execution acceptance. Those remain separate observed gates; use the new candidate report for any later result. Run the candidate acceptance checklist before using important repositories.

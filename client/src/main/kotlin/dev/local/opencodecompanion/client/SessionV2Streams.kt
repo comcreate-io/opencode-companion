@@ -58,10 +58,17 @@ sealed interface StreamResult<out T> {
  * Cold, single-connection SSE reads. The collector owns the HTTP call; cancellation closes its
  * response and cancels the call. No reconnect, cursor persistence, or host-status inference occurs.
  */
-class SessionV2Streams private constructor(baseClient: OkHttpClient) {
+class SessionV2Streams
+private constructor(
+    baseClient: OkHttpClient,
+    globalIdleTimeout: java.time.Duration = java.time.Duration.ofSeconds(30),
+) {
     constructor() : this(OkHttpClient())
 
-    private val client = V2HttpBoundary.harden(baseClient, finite = false)
+    private val client =
+        V2HttpBoundary.harden(baseClient, V2HttpBoundary.Lifetime.GLOBAL_STREAM, globalIdleTimeout)
+    private val durableClient =
+        V2HttpBoundary.harden(baseClient, V2HttpBoundary.Lifetime.DURABLE_STREAM, globalIdleTimeout)
 
     internal fun runningCallsForTests(): Int = client.dispatcher.runningCallsCount()
 
@@ -87,6 +94,7 @@ class SessionV2Streams private constructor(baseClient: OkHttpClient) {
                 .addQueryParameter("after", after.toString())
                 .build()
         return stream(
+            durableClient,
             destination,
             V2HttpBoundary.authorizedRequest(destination, url).get().build(),
         ) { frame ->
@@ -97,6 +105,7 @@ class SessionV2Streams private constructor(baseClient: OkHttpClient) {
     fun global(destination: ReadDestination): Flow<StreamResult<V2GlobalEvent>> {
         val url = destination.origin.newBuilder().addPathSegments("api/event").build()
         return stream(
+            client,
             destination,
             V2HttpBoundary.authorizedRequest(destination, url).get().build(),
         ) { frame ->
@@ -110,6 +119,7 @@ class SessionV2Streams private constructor(baseClient: OkHttpClient) {
     ): Flow<StreamResult<T>> = flowOf(StreamResult.Failure(scope(destination), reason))
 
     private fun <T> stream(
+        client: OkHttpClient,
         destination: ReadDestination,
         request: Request,
         decode: (SseFrame) -> T,
@@ -244,10 +254,12 @@ class SessionV2Streams private constructor(baseClient: OkHttpClient) {
         private const val FRAME_BYTES = 1_048_576
 
         /**
-         * Supplies only local TLS trust in tests; the hardened client removes inherited
-         * interceptors.
+         * Supplies local TLS trust and a shorter global idle budget in tests; the hardened clients
+         * still remove inherited interceptors. Durable reads never inherit that budget.
          */
-        internal fun forTests(tlsClient: OkHttpClient): SessionV2Streams =
-            SessionV2Streams(tlsClient)
+        internal fun forTests(
+            tlsClient: OkHttpClient,
+            globalIdleTimeout: java.time.Duration = java.time.Duration.ofSeconds(30),
+        ): SessionV2Streams = SessionV2Streams(tlsClient, globalIdleTimeout)
     }
 }
