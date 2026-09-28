@@ -106,6 +106,8 @@ Deliver: two independent host profiles, scoped state, permissions/questions, rea
 
 Exit: R02 and R05–R09 failure cases pass on real hosts and Android. The app knows its own lifecycle but shows “host unreachable; cause unknown” when connectivity cannot establish the remote cause. Only authoritative host status or a verified instance identity can establish a restart/interruption; stream loss alone is not evidence of sleep. Tests prove that clearing a cache cannot discard a pending send intent or advance a cursor without its state.
 
+Recovery scope update: a dedicated native scenario now checks part of V13 using a controlled client socket outage and Activity background/return on the owned API 36 emulator, with the unchanged 0.1.1 app. The final five-case core suite passed; see [M4 recovery evidence](docs/evidence/M4/recovery/REPORT.md). This adds no physical-device result and does not establish actual Wi-Fi/cellular transitions, host sleep/restart, real-host, manual TalkBack, minimum-API or landscape acceptance.
+
 ### M5 — Guided secure setup
 
 Deliver: finalized auth mode; manual HTTPS setup and, if supported by the chosen mode, expiring QR pairing; named Cloudflare Tunnel instructions/automation with preflight checks; sanitized diagnostics; remove-host and credential rotation/revocation walkthrough. First host platform: NixOS/Linux. macOS/Windows host installers are follow-up work unless explicitly added.

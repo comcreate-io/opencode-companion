@@ -1,0 +1,32 @@
+{
+  "applicationSource": "686367d65f4da6744f8988ea60b1bebfce5e620b",
+  "testSource": "12cbbbb399a34820c8a0c78c1be3891c97643d15",
+  "observedDate": "2026-09-27",
+  "timezone": "America/Denver",
+  "runs": [
+    {
+      "suite": "core",
+      "result": "pass",
+      "cases": 5,
+      "seconds": 188.123,
+      "evidence": "core.txt",
+      "kind": "emulator",
+      "model": "sdk_gphone64_x86_64",
+      "api": 36,
+      "appApkSha256": "bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9",
+      "testApkSha256": "d31a9f369f403eb4327737fe8488c9e26e7ed62837c8c7bd109cffe1bb1b72b1"
+    },
+    {
+      "suite": "twohost",
+      "result": "pass",
+      "cases": 1,
+      "seconds": 62.106,
+      "evidence": "twohost.txt",
+      "kind": "emulator",
+      "model": "sdk_gphone64_x86_64",
+      "api": 36,
+      "appApkSha256": "bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9",
+      "testApkSha256": "d31a9f369f403eb4327737fe8488c9e26e7ed62837c8c7bd109cffe1bb1b72b1"
+    }
+  ]
+}

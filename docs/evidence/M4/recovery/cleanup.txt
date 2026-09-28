@@ -1,0 +1,6 @@
+Owned emulator AVD identity verified: OpenCode_M0_API36
+Installed application APK SHA-256: bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9
+Installed application hash matches unchanged 0.1.1 candidate.
+Both owned disposable hosts stopped; private ready files removed.
+Owned emulator-5558 stopped after AVD identity verification; unrelated emulator-5556 untouched.
+No USB device writes or accessibility changes in this wave.

@@ -52,6 +52,8 @@ Prefer deterministic fake transports, controlled clocks and scripted disconnects
 
 QR-specific acceptance applies only if M1 selects a pairing mode that supports it. Manual authenticated HTTPS setup is always covered. If a per-device revocation limitation is accepted, record the decision and test its rotation/re-pair behavior; do not mark a nonexistent per-device feature as passing.
 
+Partial V13 coverage: a dedicated native scenario now checks a controlled client socket outage plus Activity background/return on the owned API 36 emulator using the unchanged 0.1.1 app. The final five-case core suite passed; see [M4 recovery evidence](evidence/M4/recovery/REPORT.md). This is neither a new physical-device result nor actual Wi-Fi/cellular validation; host sleep/restart (V14), real-host, manual TalkBack, minimum-API and landscape acceptance remain open.
+
 ## Performance and resource budgets
 
 Proposed beta targets to calibrate in M0/M3 on the named physical device; they are not measured claims:
