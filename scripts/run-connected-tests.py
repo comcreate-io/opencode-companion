@@ -162,7 +162,7 @@ def main():
     parser.add_argument("--ready", required=True, type=Path)
     parser.add_argument("--second-ready", type=Path)
     parser.add_argument("--output", required=True, type=Path)
-    parser.add_argument("--test", choices=("readToolDraftRecreationAndChanges", "questionReplyUsesRealPendingRequest", "interruptRemainsSeparateFromDisconnect", "readingPositionSurvivesRecreation"))
+    parser.add_argument("--test", choices=("readToolDraftRecreationAndChanges", "questionReplyUsesRealPendingRequest", "interruptRemainsSeparateFromDisconnect", "readingPositionSurvivesRecreation", "offlineBackgroundForegroundKeepsDurableState"))
     parser.add_argument("--process-recovery", action="store_true")
     parser.add_argument("--credential-replacement", action="store_true")
     parser.add_argument("--permission-reply", action="store_true")
@@ -218,7 +218,7 @@ def run_native(args, serial, fixture, second, session):
                     "-e", "fixtureSession", session]
     command += ["dev.local.opencodecompanion.debug.test/dev.local.opencodecompanion.connected.FixtureTestRunner"]
     methods = ("prepareDurableDraft", "restoreDurableDraft") if args.process_recovery else (None,)
-    count = 2 if args.accessibility_layout or args.question_isolation else (1 if args.test or second or args.process_recovery or args.credential_replacement or args.permission_reply else 4)
+    count = 2 if args.accessibility_layout or args.question_isolation else (1 if args.test or second or args.process_recovery or args.credential_replacement or args.permission_reply else 5)
     expected = "OK (1 test)" if count == 1 else f"OK ({count} tests)"
     outputs = []
     failed = False

@@ -1,0 +1,4 @@
+catalog 200 application/json headers_seconds 0.01
+global 200 text/event-stream headers_seconds 0.04
+durable_replay 200 text/event-stream headers_seconds 0.04
+durable_idle headers_timeout_5s
