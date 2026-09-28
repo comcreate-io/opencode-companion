@@ -108,7 +108,7 @@ Exit: R02 and R05–R09 failure cases pass on real hosts and Android. The app kn
 
 Historical recovery scope: a dedicated native scenario checked part of V13 using a controlled client socket outage and Activity background/return on the owned API 36 emulator, with the unchanged 0.1.1 app. The final five-case core suite passed; see [M4 recovery evidence](docs/evidence/M4/recovery/REPORT.md). That run added no physical-device result and did not establish actual Wi-Fi/cellular transitions, host sleep/restart, real-host, manual TalkBack, minimum-API or landscape acceptance.
 
-Real-host update (2026-09-28): private two-host connection, prompts, idle reconciliation and persisted post-reboot histories were observed as described in [M5 real-host evidence](docs/evidence/M5/real-hosts/REPORT.md). A rapid-typing loss remains open and requires a fresh candidate run. Wi-Fi/cellular switching, host interruption during active execution and M4's full exit remain unproved.
+Real-host update (2026-09-28): private two-host connection, prompts, idle reconciliation and persisted post-reboot histories were observed as described in [M5 real-host evidence](docs/evidence/M5/real-hosts/REPORT.md). The subsequent rapid-typing loss was fixed in application source `0af0602`; the final candidate passed the native regression and ordinary-app rapid-input, two-host draft and process-recovery checks. Wi-Fi/cellular switching, host interruption during active execution and M4's full exit remain unproved.
 
 ### M5 — Guided secure setup
 
