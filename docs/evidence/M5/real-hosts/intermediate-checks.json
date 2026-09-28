@@ -1,0 +1,7 @@
+{
+  "kind": "usb",
+  "model": "Pixel 8 Pro",
+  "api": 36,
+  "appApkSha256": "d4b136beddd2361754423c2387101d59506c024927d1dca839480f16cd5eae8c",
+  "testApkSha256": "fc0ceb0bcf58d8cf924a1812d118f81ba5697c0084d49fdf0831abe1eec5807c"
+}

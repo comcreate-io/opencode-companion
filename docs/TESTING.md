@@ -1,17 +1,17 @@
 # Android candidate testing
 
-This candidate connects to your OpenCode host. Start with a disposable project and follow [Host setup](HOST_SETUP.md) before allowing it to run work. It supports exactly OpenCode **1.18.32**, authenticated HTTPS and explicit shared-password acknowledgement for each machine. This is a testing handoff, not a production release.
+This candidate connects to your OpenCode host. Start with a disposable project and follow [Host setup](HOST_SETUP.md) before allowing it to run work. It supports exactly OpenCode **1.18.32**, authenticated HTTPS and explicit shared-password acknowledgement for each machine. This is an owner-testing candidate, not a production release.
 
 ## Identify the artifact
 
 | Item | Candidate |
 |---|---|
-| Local APK | `.android-local/candidate/opencode-companion-0.1.1-candidate.apk` |
+| Local APK | `.android-local/candidate/opencode-companion-0.1.2-candidate.apk` |
 | Package | `dev.local.opencodecompanion.debug` |
-| Version | `0.1.1-dev-candidate`, version code `2` |
+| Version | `0.1.2-dev-candidate`, version code `3` |
 | Android minimum | Android 9 / API 28 |
-| Implementation commit | [`686367d`](https://github.com/comcreate-io/opencode-companion/commit/686367d65f4da6744f8988ea60b1bebfce5e620b) |
-| APK SHA-256 | `bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9` |
+| Implementation commit | [`0af0602`](https://github.com/comcreate-io/opencode-companion/commit/0af0602479ffd8fe9e7efccd62afe59a5b02d960) |
+| APK SHA-256 | `7cb258bb5c377ce55cca9b1f352badc70778f46b6566c2c44b10344f48c652c1` |
 | Debug signing certificate SHA-256 | `580fa46f785a93d6df37ead6796ae4c58cc92ca020f2419110b4e05f1285d886` |
 
 Release signing and distribution are not established; unsigned release assembly is a build check, not an installable release.
@@ -22,7 +22,7 @@ With USB debugging enabled and the intended phone authorized, run from the repos
 
 ```bash
 adb devices -l
-adb -s YOUR_DEVICE_SERIAL install -r .android-local/candidate/opencode-companion-0.1.1-candidate.apk
+adb -s YOUR_DEVICE_SERIAL install -r .android-local/candidate/opencode-companion-0.1.2-candidate.apk
 ```
 
 Replace `YOUR_DEVICE_SERIAL` with that device's serial. `install -r` updates a matching package/signature while retaining app data. If Android reports a signing mismatch, stop; do not uninstall just to make installation succeed. Open **OpenCode Companion** on the phone and confirm the installed package/version if another build is present.
@@ -31,18 +31,22 @@ Uninstalling or clearing app data loses local drafts and pending intent records.
 
 ## Observed checks
 
-The [accessibility regression report](evidence/M3/accessibility/REPORT.md) owns the new candidate's exact checks and limitations. Its source passed 109 JVM tests, formatting, lint (zero errors, 15 dependency-update warnings), debug/unsigned release and instrumentation assembly. A fresh source export reproduced the APK above byte for byte with the same tools and debug signing key. The new emulator checks cover reading-position restoration, answer isolation, accessible semantics, contrast and light/dark 2×-font layouts with the keyboard open. See that report for the complete final regression matrix.
+The [0.1.2 real-host report](evidence/M5/real-hosts/REPORT.md) records the current candidate. Formatting, 123 JVM tests (46 protocol, 71 client, 6 app), lint, debug/unsigned release and instrumentation assembly passed. Sixteen native checks passed on the Pixel, including the delayed-save composer regression, right-side scrolling, two-host/process recovery, large-text layouts, questions, credentials and permissions. Installed APK read-back matched the hash above. This is a current native regression matrix; the 25-case Room/Keystore run remains historical. Ordinary-app real-host prompts, rapid typing, isolated drafts and process recovery also passed.
 
-**The exact 0.1.1 APK is installed on the Pixel and passed all 14 native fixture checks.** Installed hash read-back matched before and after testing. See [Pixel evidence](evidence/M3/accessibility/pixel/REPORT.md) for the suite, the initial setup-helper failure and the successful rerun. The core suite used a strengthened test helper; the application APK was unchanged. Existing app data, accessibility settings and global font scale were preserved. The ordinary app was launched after fixture cleanup.
+### Historical 0.1.1 and 0.1.0 evidence
 
-The unchanged APK also passed a five-case core regression on the owned API 36 emulator, including controlled socket-loss and Activity background/return recovery. [Recovery evidence](evidence/M4/recovery/REPORT.md) records exact test provenance and the distinction between an accepted global stream and an idle durable subscription request. This does not establish physical network handoff.
+The [accessibility regression report](evidence/M3/accessibility/REPORT.md) owns the historical 0.1.1 candidate's exact checks and limitations. Its source passed 109 JVM tests, formatting, lint (zero errors, 15 dependency-update warnings), debug/unsigned release and instrumentation assembly. A fresh source export reproduced its historical 0.1.1 APK byte for byte with the same tools and debug signing key. The new emulator checks cover reading-position restoration, answer isolation, accessible semantics, contrast and light/dark 2×-font layouts with the keyboard open. See that report for the complete final regression matrix.
+
+**The exact historical 0.1.1 APK passed all 14 native fixture checks on the Pixel.** Installed hash read-back matched before and after testing. See [Pixel evidence](evidence/M3/accessibility/pixel/REPORT.md) for the suite, the initial setup-helper failure and the successful rerun. The core suite used a strengthened test helper; the application APK was unchanged. Existing app data, accessibility settings and global font scale were preserved. The ordinary app was launched after fixture cleanup.
+
+That unchanged 0.1.1 APK also passed a five-case core regression on the owned API 36 emulator, including controlled socket-loss and Activity background/return recovery. [Recovery evidence](evidence/M4/recovery/REPORT.md) records exact test provenance and the distinction between an accepted global stream and an idle durable subscription request. This does not establish physical network handoff.
 
 Historical 0.1.0 observations remain in the [connected evidence report](evidence/M3/connected/REPORT.md):
 
 - Implementation commit `10901c0` passed CI and 109 JVM tests: 46 protocol and 63 client. Debug, unsigned release and Android instrumentation APKs assembled. Lint reported no errors and 15 dependency-update warnings. A fresh source export and clean workspace build produced the identical historical APK recorded in the connected report.
 - All 25 Room/Keystore platform tests passed on the isolated emulator and Carter's Pixel 8 Pro running Android 16 / API 36.
 - Emulator and Pixel native runs each passed three core scenarios, one two-host scenario, two process-restart instrumentation stages, one credential-update scenario and one permission scenario. Process recovery includes durable draft and credential reuse.
-- The historical 0.1.0 APK's installed checksum matched its handoff. Its eight native fixture checks passed on the unlocked Pixel over USB-forwarded HTTPS. The current 0.1.1 device result is recorded separately above; neither result establishes real-network, manual TalkBack or layout approval.
+- The historical 0.1.0 APK's installed checksum matched its handoff. Its eight native fixture checks passed on the unlocked Pixel over USB-forwarded HTTPS. The historical 0.1.1 device result is recorded separately above; neither result establishes real-network, manual TalkBack or layout approval.
 
 These results do not establish a named tunnel, your remote model/provider path, cellular recovery, manual TalkBack behavior or all supported Android versions. Automated semantics and bounded emulator layout checks do not establish full accessibility or Carter's phone-layout acceptance. The final artifact record must say which checks apply to its source revision.
 
