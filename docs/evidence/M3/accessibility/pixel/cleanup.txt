@@ -1,0 +1,5 @@
+PASS: installed 0.1.1 APK SHA-256 bd2f3c0ef2229d4d15579d2d0bbfc5832003ffb4d45e20a609821343c2be24a9
+PASS: no ADB reverse mappings remain
+PASS: accessibility service configuration and global font scale unchanged
+PASS: ordinary app launched after instrumentation without clearing app data
+PASS: both owned fixture hosts stopped and private ready files removed

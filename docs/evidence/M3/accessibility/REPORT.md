@@ -2,7 +2,7 @@
 
 Observed 2026-09-27 on the isolated `OpenCode_M0_API36` emulator, Android API 36. Source: `686367d65f4da6744f8988ea60b1bebfce5e620b`. Candidate: **0.1.1-dev-candidate**, version code 2. [Checks and artifact identities](checks.json); [installation handoff](../../../TESTING.md).
 
-All 14 native cases and 109 JVM tests passed. This pass found and repaired reproducible defects; it does not establish real-network, physical-device or full accessibility acceptance. Only historical 0.1.0 has [Pixel evidence](../connected/pixel/REPORT.md).
+All 14 native cases and 109 JVM tests passed in this emulator wave. This pass found and repaired reproducible defects; it does not establish real-network or full accessibility acceptance. The later [0.1.1 Pixel verification](pixel/REPORT.md) passed all 14 native cases on the same application APK and records its separate test-helper provenance. Historical 0.1.0 has its own [Pixel evidence](../connected/pixel/REPORT.md).
 
 ## Defects reproduced before their fixes
 
@@ -51,7 +51,7 @@ Run native checks with `scripts/run-connected-tests.py --ready PRIVATE_READY_FIL
 
 ## Acceptance still open
 
-- This 0.1.1 artifact has not been tested or installed on the Pixel. Its screen was locked during this wave; the previous installation, data, lock policy and accessibility service configuration were preserved.
+- During this emulator wave the Pixel was locked. Subsequent [Pixel verification](pixel/REPORT.md) installed and tested the same 0.1.1 APK without clearing data or changing lock/accessibility configuration. The original machine-readable emulator record remains historical.
 - Actual HTTPS host/disposable project selection and explicit shared-password acknowledgement remain required. No actual-host credential was inferred or read.
 - Wi-Fi/cellular switching, named tunnel, real provider, host sleep/restart over that route, manual TalkBack traversal and Carter's phone-layout approval remain unverified.
 - Automated semantics/contrast checks do not prove spoken labels, focus order or full accessibility. Large-text layout tests require API 30+ and ran on API 36; minimum-API and landscape coverage remain open.
