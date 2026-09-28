@@ -33,6 +33,9 @@ class FixtureTestRunner : AndroidJUnitRunner() {
 
 /** The generated CA exists only in instrumentation input and this test process. */
 class FixtureApplication : CompanionApplication() {
+    internal var networkControl: FixtureNetworkControl? = null
+        private set
+
     override fun createCoordinator(
         application: Application,
         scope: CoroutineScope,
@@ -55,10 +58,13 @@ class FixtureApplication : CompanionApplication() {
             builder.addTrustedCertificate(secondCertificate)
         }
         val trust = builder.build()
+        val control = FixtureNetworkControl()
         val client =
-            OkHttpClient.Builder()
-                .sslSocketFactory(trust.sslSocketFactory(), trust.trustManager)
-                .build()
+            control.install(
+                OkHttpClient.Builder()
+                    .sslSocketFactory(trust.sslSocketFactory(), trust.trustManager)
+            )
+        networkControl = control
         return AndroidSessionCoordinatorFactory.create(
             application,
             scope,

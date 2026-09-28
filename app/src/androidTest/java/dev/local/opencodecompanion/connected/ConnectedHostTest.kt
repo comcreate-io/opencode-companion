@@ -7,13 +7,17 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import dev.local.opencodecompanion.MainActivity
 import dev.local.opencodecompanion.client.session.ConnectionState
 import dev.local.opencodecompanion.protocol.transcript.Kind
 import java.io.File
+import java.util.concurrent.TimeUnit
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
@@ -257,5 +261,159 @@ class ConnectedHostTest {
                 .top
         assertEquals("Activity recreation must retain the reading anchor", before, after, 4f)
         screenshot("reading-after-recreation.png")
+    }
+
+    @Test
+    fun offlineBackgroundForegroundKeepsDurableState() {
+        val scenario = compose.activityRule.scenario
+        val draft = "Draft survives offline and background"
+        setup("Android offline fixture")
+        val gate = checkNotNull((compose.activity.application as FixtureApplication).networkControl)
+        try {
+            newSession()
+            val model = ViewModelProvider(compose.activity)[ConnectedViewModel::class.java]
+            send("READ_CASE")
+            awaitText("Fixture complete.")
+            awaitText("ANDROID_READ_MARKER", substring = true)
+            compose.waitUntil(30_000) {
+                val state = model.state.value
+                state.selectedSession !in state.active &&
+                    state.outgoing.isEmpty() &&
+                    state.transcript?.seen?.values?.any {
+                        (it.kind as? Kind.TextEnded)?.text?.contains("Fixture complete.") == true
+                    } == true
+            }
+            val selectedMachine = checkNotNull(model.state.value.selectedMachine)
+            val selectedSession = checkNotNull(model.state.value.selectedSession)
+            val completedCopies =
+                model.state.value.transcript!!.seen.values.count {
+                    (it.kind as? Kind.TextEnded)?.text?.contains("Fixture complete.") == true
+                }
+            assertEquals(
+                "The fixture must have exactly one completed durable response",
+                1,
+                completedCopies,
+            )
+            assertEquals("One UI send must cause one prompt attempt", 1, gate.promptAttempts)
+            val promptsBeforeFault = gate.promptAttempts
+            compose.onNodeWithContentDescription("Message").performTextInput(draft)
+            compose.waitUntil(10_000) {
+                model.state.value.draft?.text == draft &&
+                    compose
+                        .onAllNodes(hasText("Send") and isEnabled())
+                        .fetchSemanticsNodes()
+                        .isNotEmpty()
+            }
+            closeSoftKeyboard()
+            val savedDraft = checkNotNull(model.state.value.draft)
+            fun assertCapturedIdentity() {
+                val state = model.state.value
+                assertEquals("Machine identity changed", selectedMachine, state.selectedMachine)
+                assertEquals("Session identity changed", selectedSession, state.selectedSession)
+                assertEquals("Draft key changed", savedDraft.key, state.draft?.key)
+                assertEquals("Draft revision changed", savedDraft.revision, state.draft?.revision)
+                assertEquals("Draft text changed", draft, state.draft?.text)
+            }
+            assertCapturedIdentity()
+            compose.waitUntil(10_000) { gate.bothStreamsAccepted(selectedSession.sessionId.value) }
+            // Prove Activity stop drains accepted live streams without the fault gate helping.
+            scenario.moveToState(Lifecycle.State.CREATED)
+            compose.waitUntil(10_000) {
+                !model.state.value.foreground && gate.runningCalls == 0 && gate.queuedCalls == 0
+            }
+            assertCapturedIdentity()
+            scenario.moveToState(Lifecycle.State.RESUMED)
+            compose.waitUntil(30_000) {
+                model.state.value.connection == ConnectionState.Ready &&
+                    gate.globalAcceptedAndDurableRequested(selectedSession.sessionId.value)
+            }
+            assertCapturedIdentity()
+            screenshot("offline-before.png")
+            val blockedBeforeFault = gate.blockedConnections
+
+            gate.offline()
+            compose.waitUntil(30_000) {
+                model.state.value.connection is ConnectionState.Unavailable &&
+                    gate.blockedConnections > blockedBeforeFault
+            }
+            gate.evictIdle() // Closing active calls can release another idle connection.
+            compose
+                .onNodeWithText("The host is unreachable. Check its connection and try again.")
+                .assertExists()
+            compose.onNodeWithText("Ready · host current").assertDoesNotExist()
+            compose.onNodeWithText("Fixture complete.").assertExists()
+            compose.onNodeWithContentDescription("Message").assertTextContains(draft)
+            compose.onNodeWithText("Send").assertIsNotEnabled()
+            assertCapturedIdentity()
+            screenshot("offline-unavailable.png")
+
+            // ActivityScenario lifecycle moves are made from the instrumentation thread.
+            scenario.moveToState(Lifecycle.State.CREATED)
+            compose.waitUntil(10_000) {
+                !model.state.value.foreground && gate.runningCalls == 0 && gate.queuedCalls == 0
+            }
+            assertCapturedIdentity()
+            val blockedBeforeResume = gate.blockedConnections
+            scenario.moveToState(Lifecycle.State.RESUMED)
+            compose.waitUntil(30_000) {
+                model.state.value.foreground &&
+                    model.state.value.connection is ConnectionState.Unavailable &&
+                    gate.blockedConnections > blockedBeforeResume
+            }
+            compose.onNodeWithContentDescription("Message").assertTextContains(draft)
+            compose.onNodeWithText("Send").assertIsNotEnabled()
+            assertCapturedIdentity()
+            assertTrue(
+                "The socket gate must block the foreground reconnect",
+                gate.blockedConnections > blockedBeforeResume,
+            )
+
+            scenario.moveToState(Lifecycle.State.CREATED)
+            compose.waitUntil(10_000) {
+                !model.state.value.foreground && gate.runningCalls == 0 && gate.queuedCalls == 0
+            }
+            assertCapturedIdentity()
+            val unexpected = gate.watchUnexpectedCall()
+            gate.online()
+            assertFalse(
+                "A stopped Activity must not start a host call during the refresh interval",
+                unexpected.await(3, TimeUnit.SECONDS),
+            )
+            gate.stopWatching()
+            assertEquals(0, gate.runningCalls)
+            assertEquals(0, gate.queuedCalls)
+
+            scenario.moveToState(Lifecycle.State.RESUMED)
+            compose.waitUntil(30_000) {
+                model.state.value.connection == ConnectionState.Ready &&
+                    gate.globalAcceptedAndDurableRequested(selectedSession.sessionId.value)
+            }
+            awaitText("Fixture complete.")
+            compose.onNodeWithContentDescription("Message").assertTextContains(draft)
+            compose.onNodeWithText("Send").assertIsEnabled()
+            assertCapturedIdentity()
+            val copiesAfter =
+                model.state.value.transcript!!.seen.values.count {
+                    (it.kind as? Kind.TextEnded)?.text?.contains("Fixture complete.") == true
+                }
+            assertEquals("Reconnect must retain one durable copy", completedCopies, copiesAfter)
+            assertEquals(
+                "Reconnect must not submit the unsent draft",
+                promptsBeforeFault,
+                gate.promptAttempts,
+            )
+            screenshot("offline-after.png")
+
+            // Recovered subscriptions also drain on stop with the fault gate online.
+            scenario.moveToState(Lifecycle.State.CREATED)
+            compose.waitUntil(10_000) {
+                !model.state.value.foreground && gate.runningCalls == 0 && gate.queuedCalls == 0
+            }
+            assertCapturedIdentity()
+        } finally {
+            gate.stopWatching()
+            gate.online()
+            scenario.moveToState(Lifecycle.State.RESUMED)
+        }
     }
 }
