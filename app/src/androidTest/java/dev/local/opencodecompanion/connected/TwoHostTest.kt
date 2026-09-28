@@ -5,8 +5,10 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.text.AnnotatedString
+import androidx.lifecycle.ViewModelProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import dev.local.opencodecompanion.MainActivity
+import dev.local.opencodecompanion.client.session.ConnectionState
 import org.junit.Rule
 import org.junit.Test
 
@@ -42,34 +44,46 @@ class TwoHostTest {
     }
 
     private fun setup(name: String, originArg: String, passwordArg: String) {
+        val model = ViewModelProvider(compose.activity)[ConnectedViewModel::class.java]
+        val existingMachineIds = model.state.value.machines.map { it.id }.toSet()
+        val origin = requireNotNull(args.getString(originArg))
         compose.onNodeWithTag("machine-list").assertExists()
         compose.onNodeWithContentDescription("Machine name").performTextInput(name)
-        compose
-            .onNodeWithContentDescription("https://host.example")
-            .performTextInput(requireNotNull(args.getString(originArg)))
+        compose.onNodeWithContentDescription("https://host.example").performTextInput(origin)
         compose
             .onNodeWithContentDescription("Server password")
             .performTextInput(requireNotNull(args.getString(passwordArg)))
         closeSoftKeyboard()
         compose.onNodeWithText(" I understand and accept").performScrollTo().performClick()
-        compose.onNodeWithText("Save machine").performScrollTo().performClick()
+        compose.onNodeWithText("Save machine").performScrollTo().assertIsEnabled().performClick()
+        compose.waitUntil(30_000) {
+            val state = model.state.value
+            val created =
+                state.machines.singleOrNull {
+                    it.id !in existingMachineIds && it.displayName == name && it.origin == origin
+                }
+            created != null &&
+                state.selectedMachine == created.id &&
+                state.connection == ConnectionState.Ready
+        }
         selectMachine(name)
     }
 
     private fun selectMachine(name: String) {
+        val model = ViewModelProvider(compose.activity)[ConnectedViewModel::class.java]
+        val expected = model.state.value.machines.single { it.displayName == name }
         compose.waitUntil(30_000) {
-            compose.onAllNodesWithText(name).fetchSemanticsNodes().isNotEmpty() &&
-                compose.onAllNodesWithTag("machine-list").fetchSemanticsNodes().isNotEmpty()
+            compose.onAllNodesWithTag("machine-list").fetchSemanticsNodes().isNotEmpty()
         }
-        compose
-            .onNode(hasText(name) and hasClickAction() and hasSetTextAction().not())
-            .performScrollTo()
-            .performClick()
+        val row = hasText(name) and hasClickAction() and hasSetTextAction().not()
+        compose.onNodeWithTag("machine-list").performScrollToNode(row)
+        compose.onNode(row).performScrollTo().performClick()
         compose.onNodeWithTag("session-list").assertExists()
         compose.waitUntil(30_000) {
-            compose.onAllNodesWithText("Ready · host current").fetchSemanticsNodes().isNotEmpty() &&
-                compose.onAllNodesWithText(name).fetchSemanticsNodes().isNotEmpty()
+            val state = model.state.value
+            state.selectedMachine == expected.id && state.connection == ConnectionState.Ready
         }
+        compose.onNodeWithText("Ready · host current").assertExists()
     }
 
     private fun openSession(machineName: String, sharedSession: String) {
