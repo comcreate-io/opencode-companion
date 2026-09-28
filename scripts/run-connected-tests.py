@@ -7,12 +7,56 @@ import http.client
 import hashlib
 import json
 from pathlib import Path
+import re
+import shlex
 import ssl
 import subprocess
 from urllib.parse import urlsplit
 import uuid
 
 SESSION = "ses_000000000000000000000001"
+INSTALL_TIMEOUT_SECONDS = 90
+
+
+def installed_apk_sha256(serial, package):
+    """Return a hash only for a readable, single-APK install of the requested package."""
+    try:
+        paths = subprocess.run(["adb", "-s", serial, "shell", "pm", "path", package],
+                               capture_output=True, text=True, timeout=15)
+        if paths.returncode != 0:
+            return None
+        entries = paths.stdout.strip().splitlines()
+        if len(entries) != 1 or not entries[0].startswith("package:/data/app/"):
+            return None
+        path = entries[0][len("package:"):]
+        if not path.endswith("/base.apk") or any(character.isspace() for character in path):
+            return None
+        result = subprocess.run(["adb", "-s", serial, "shell", "sha256sum", shlex.quote(path)],
+                                capture_output=True, text=True, timeout=15)
+        if result.returncode != 0:
+            return None
+        fields = result.stdout.strip().split()
+        if len(fields) != 2 or fields[1] != path or not re.fullmatch(r"[0-9a-fA-F]{64}", fields[0]):
+            return None
+        return fields[0].lower()
+    except (OSError, subprocess.SubprocessError):
+        return None
+
+
+def ensure_installed_apk(serial, apk, package, expected_hash, label):
+    if installed_apk_sha256(serial, package) == expected_hash:
+        return
+    try:
+        result = subprocess.run(["adb", "-s", serial, "install", "-r", str(apk)],
+                                capture_output=True, timeout=INSTALL_TIMEOUT_SECONDS)
+    except subprocess.TimeoutExpired:
+        raise SystemExit(f"{label} APK install timed out after {INSTALL_TIMEOUT_SECONDS} seconds") from None
+    except OSError:
+        raise SystemExit(f"{label} APK install could not start") from None
+    if result.returncode != 0:
+        raise SystemExit(f"{label} APK install failed")
+    if installed_apk_sha256(serial, package) != expected_hash:
+        raise SystemExit(f"{label} installed APK hash could not be verified")
 
 
 def load_fixture(path):
@@ -191,14 +235,16 @@ def main():
     metadata["testApkSha256"] = hashlib.sha256(Path("app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk").read_bytes()).hexdigest()
     (args.output / "target.json").write_text(json.dumps(metadata, indent=2) + "\n")
     with fixture_access(serial, metadata["kind"] == "usb", [item for item in (fixture, second) if item]):
-        count = run_native(args, serial, fixture, second, session)
+        count = run_native(args, serial, fixture, second, session, metadata)
     print("PASS connected native HTTPS fixture tests:", count)
 
 
-def run_native(args, serial, fixture, second, session):
+def run_native(args, serial, fixture, second, session, metadata):
     run_id = uuid.uuid4().hex
-    for apk in ("app/build/outputs/apk/debug/app-debug.apk", "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"):
-        subprocess.run(["adb", "-s", serial, "install", "-r", apk], check=True, capture_output=True)
+    ensure_installed_apk(serial, Path("app/build/outputs/apk/debug/app-debug.apk"),
+                         "dev.local.opencodecompanion.debug", metadata["appApkSha256"], "Application")
+    ensure_installed_apk(serial, Path("app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"),
+                         "dev.local.opencodecompanion.debug.test", metadata["testApkSha256"], "Test")
     test_class = ("QuestionStateIsolationTest" if args.question_isolation else
                   "AccessibilityLayoutTest" if args.accessibility_layout else
                   "PermissionReplyTest" if args.permission_reply else
