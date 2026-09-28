@@ -39,7 +39,7 @@ Final instrumentation source is `12cbbbb399a34820c8a0c78c1be3891c97643d15`, test
 
 [Cleanup verification](cleanup.txt) records installed emulator APK read-back matching the candidate, both disposable hosts stopped, private ready files removed, and only the owned emulator shut down.
 
-Synthetic captures show [before fault](offline-before.png), [unavailable](offline-unavailable.png) and [recovered](offline-after.png). They support the bounded test assertions, not owner layout approval.
+Synthetic captures show [before fault](offline-before.png), [offline/reconnecting](offline-unavailable.png) and [recovered](offline-after.png). The offline PNG caught “Connecting to host…” during a retry after the test had asserted the Unavailable message; it shows retained content/draft and disabled Send, not the Unavailable label itself. The passing instrumentation records that earlier assertion. These captures do not establish owner layout approval.
 
 ## Reproduce
 
