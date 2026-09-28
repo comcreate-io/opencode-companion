@@ -32,7 +32,17 @@ internal object V2HttpBoundary {
         return false
     }
 
-    fun harden(base: OkHttpClient, finite: Boolean): OkHttpClient =
+    enum class Lifetime {
+        FINITE,
+        GLOBAL_STREAM,
+        DURABLE_STREAM,
+    }
+
+    fun harden(
+        base: OkHttpClient,
+        lifetime: Lifetime,
+        globalIdleTimeout: Duration = Duration.ofSeconds(30),
+    ): OkHttpClient =
         base
             .newBuilder()
             .apply {
@@ -47,8 +57,16 @@ internal object V2HttpBoundary {
             .followSslRedirects(false)
             .retryOnConnectionFailure(false)
             .connectTimeout(Duration.ofSeconds(5))
-            .readTimeout(Duration.ofSeconds(if (finite) 10 else 30))
-            .callTimeout(Duration.ofSeconds(if (finite) 20 else 0))
+            .readTimeout(
+                when (lifetime) {
+                    Lifetime.FINITE -> Duration.ofSeconds(10)
+                    Lifetime.GLOBAL_STREAM -> globalIdleTimeout
+                    // OpenCode 1.18.32 durable tails have no initial frame or heartbeat.
+                    // Lifecycle cancellation and the bounded global/finite reads own liveness.
+                    Lifetime.DURABLE_STREAM -> Duration.ZERO
+                }
+            )
+            .callTimeout(Duration.ofSeconds(if (lifetime == Lifetime.FINITE) 20 else 0))
             .build()
 
     fun authorizedRequest(destination: ReadDestination, url: HttpUrl): Request.Builder {

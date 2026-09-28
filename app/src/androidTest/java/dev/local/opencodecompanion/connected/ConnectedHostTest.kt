@@ -2,6 +2,7 @@ package dev.local.opencodecompanion.connected
 
 import android.graphics.Bitmap
 import android.view.inputmethod.InputMethodManager
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -152,6 +153,43 @@ class ConnectedHostTest {
             screenshot.compress(Bitmap.CompressFormat.PNG, 100, it)
         }
         screenshot.recycle()
+    }
+
+    @Test
+    fun catalogScrollSurfaceSpansRightSideOfPhone() {
+        setup("Android catalog width fixture")
+        awaitText("Ready · host current")
+        compose.onNodeWithText("New session").assertIsEnabled().performClick()
+        compose.waitUntil(10_000) {
+            compose.onAllNodesWithTag("session-catalog").fetchSemanticsNodes().isNotEmpty()
+        }
+        val root = compose.onRoot().fetchSemanticsNode().boundsInRoot
+        val catalog = compose.onNodeWithTag("session-catalog")
+        val bounds = catalog.fetchSemanticsNode().boundsInRoot
+        val rightSideX = root.left + root.width * 0.75f
+        assertTrue(
+            "Catalog scroll surface must fill the phone content width",
+            bounds.width >= root.width * 0.85f,
+        )
+        assertTrue(
+            "The right-side swipe must begin inside the catalog scroll surface",
+            rightSideX in bounds.left..bounds.right,
+        )
+        val before =
+            catalog.fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange].value()
+        catalog.performTouchInput {
+            val x = rightSideX - bounds.left
+            swipe(
+                start = Offset(x, height * 0.75f),
+                end = Offset(x, height * 0.25f),
+                durationMillis = 350,
+            )
+        }
+        compose.waitForIdle()
+        val after =
+            catalog.fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange].value()
+        assertTrue("Right-side gesture must scroll the catalog", after > before)
+        screenshot("catalog-right-side-scroll.png")
     }
 
     @Test

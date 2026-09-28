@@ -1,0 +1,77 @@
+{
+  "totalTests": 16,
+  "suites": [
+    {
+      "suite": "core",
+      "tests": 6,
+      "result": "pass",
+      "appApkSha256": "7cb258bb5c377ce55cca9b1f352badc70778f46b6566c2c44b10344f48c652c1",
+      "testApkSha256": "a3460aba7530443f9b542fc8e7efd8b56891a421e5405972c9633996fd79e449",
+      "output": "core.txt",
+      "metadata": "core-checks.json"
+    },
+    {
+      "suite": "composer",
+      "tests": 1,
+      "result": "pass",
+      "appApkSha256": "7cb258bb5c377ce55cca9b1f352badc70778f46b6566c2c44b10344f48c652c1",
+      "testApkSha256": "41f0bffcd36359c69d1925ae1e441527f1613109a495f8b81013b3fd782b147d",
+      "output": "composer.txt",
+      "metadata": "composer-checks.json"
+    },
+    {
+      "suite": "two-host",
+      "tests": 1,
+      "result": "pass",
+      "appApkSha256": "7cb258bb5c377ce55cca9b1f352badc70778f46b6566c2c44b10344f48c652c1",
+      "testApkSha256": "41f0bffcd36359c69d1925ae1e441527f1613109a495f8b81013b3fd782b147d",
+      "output": "two-host.txt",
+      "metadata": "two-host-checks.json"
+    },
+    {
+      "suite": "process",
+      "tests": 2,
+      "result": "pass",
+      "appApkSha256": "7cb258bb5c377ce55cca9b1f352badc70778f46b6566c2c44b10344f48c652c1",
+      "testApkSha256": "41f0bffcd36359c69d1925ae1e441527f1613109a495f8b81013b3fd782b147d",
+      "output": "process.txt",
+      "metadata": "process-checks.json"
+    },
+    {
+      "suite": "accessibility",
+      "tests": 2,
+      "result": "pass",
+      "appApkSha256": "7cb258bb5c377ce55cca9b1f352badc70778f46b6566c2c44b10344f48c652c1",
+      "testApkSha256": "41f0bffcd36359c69d1925ae1e441527f1613109a495f8b81013b3fd782b147d",
+      "output": "accessibility.txt",
+      "metadata": "accessibility-checks.json"
+    },
+    {
+      "suite": "question",
+      "tests": 2,
+      "result": "pass",
+      "appApkSha256": "7cb258bb5c377ce55cca9b1f352badc70778f46b6566c2c44b10344f48c652c1",
+      "testApkSha256": "41f0bffcd36359c69d1925ae1e441527f1613109a495f8b81013b3fd782b147d",
+      "output": "question.txt",
+      "metadata": "question-checks.json"
+    },
+    {
+      "suite": "credential",
+      "tests": 1,
+      "result": "pass",
+      "appApkSha256": "7cb258bb5c377ce55cca9b1f352badc70778f46b6566c2c44b10344f48c652c1",
+      "testApkSha256": "41f0bffcd36359c69d1925ae1e441527f1613109a495f8b81013b3fd782b147d",
+      "output": "credential.txt",
+      "metadata": "credential-checks.json"
+    },
+    {
+      "suite": "permission",
+      "tests": 1,
+      "result": "pass",
+      "appApkSha256": "7cb258bb5c377ce55cca9b1f352badc70778f46b6566c2c44b10344f48c652c1",
+      "testApkSha256": "41f0bffcd36359c69d1925ae1e441527f1613109a495f8b81013b3fd782b147d",
+      "output": "permission.txt",
+      "metadata": "permission-checks.json"
+    }
+  ]
+}

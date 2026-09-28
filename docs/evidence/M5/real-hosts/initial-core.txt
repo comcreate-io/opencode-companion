@@ -1,0 +1,144 @@
+INSTRUMENTATION_STATUS: class=dev.local.opencodecompanion.connected.ConnectedHostTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=6
+INSTRUMENTATION_STATUS: stream=
+dev.local.opencodecompanion.connected.ConnectedHostTest:
+INSTRUMENTATION_STATUS: test=interruptRemainsSeparateFromDisconnect
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=dev.local.opencodecompanion.connected.ConnectedHostTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=6
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=interruptRemainsSeparateFromDisconnect
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=dev.local.opencodecompanion.connected.ConnectedHostTest
+INSTRUMENTATION_STATUS: current=2
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=6
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: test=readToolDraftRecreationAndChanges
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=dev.local.opencodecompanion.connected.ConnectedHostTest
+INSTRUMENTATION_STATUS: current=2
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=6
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=readToolDraftRecreationAndChanges
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=dev.local.opencodecompanion.connected.ConnectedHostTest
+INSTRUMENTATION_STATUS: current=3
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=6
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: test=readingPositionSurvivesRecreation
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=dev.local.opencodecompanion.connected.ConnectedHostTest
+INSTRUMENTATION_STATUS: current=3
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=6
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=readingPositionSurvivesRecreation
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=dev.local.opencodecompanion.connected.ConnectedHostTest
+INSTRUMENTATION_STATUS: current=4
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=6
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: test=catalogScrollSurfaceSpansRightSideOfPhone
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=dev.local.opencodecompanion.connected.ConnectedHostTest
+INSTRUMENTATION_STATUS: current=4
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=6
+INSTRUMENTATION_STATUS: stack=java.lang.AssertionError: Failed to assert the following: (is enabled)
+Semantics of the node:
+Node #1248 at (l=48.0, t=597.0, r=331.0, b=741.0)px
+Role = 'Button'
+Text = '[New session]'
+[Disabled]
+Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, SetTextSubstitution, ShowTextSubstitution]
+MergeDescendants = 'true'
+Has 5 siblings
+Selector used: (Text + InputText + EditableText contains 'New session' (ignoreCase: false))
+
+	at androidx.compose.ui.test.AssertionsKt.assert(Assertions.kt:264)
+	at androidx.compose.ui.test.AssertionsKt.assert$default(Assertions.kt:254)
+	at androidx.compose.ui.test.AssertionsKt.assertIsEnabled(Assertions.kt:60)
+	at dev.local.opencodecompanion.connected.ConnectedHostTest.catalogScrollSurfaceSpansRightSideOfPhone(ConnectedHostTest.kt:161)
+
+INSTRUMENTATION_STATUS: stream=
+Error in catalogScrollSurfaceSpansRightSideOfPhone(dev.local.opencodecompanion.connected.ConnectedHostTest):
+java.lang.AssertionError: Failed to assert the following: (is enabled)
+Semantics of the node:
+Node #1248 at (l=48.0, t=597.0, r=331.0, b=741.0)px
+Role = 'Button'
+Text = '[New session]'
+[Disabled]
+Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, SetTextSubstitution, ShowTextSubstitution]
+MergeDescendants = 'true'
+Has 5 siblings
+Selector used: (Text + InputText + EditableText contains 'New session' (ignoreCase: false))
+
+	at androidx.compose.ui.test.AssertionsKt.assert(Assertions.kt:264)
+	at androidx.compose.ui.test.AssertionsKt.assert$default(Assertions.kt:254)
+	at androidx.compose.ui.test.AssertionsKt.assertIsEnabled(Assertions.kt:60)
+	at dev.local.opencodecompanion.connected.ConnectedHostTest.catalogScrollSurfaceSpansRightSideOfPhone(ConnectedHostTest.kt:161)
+
+INSTRUMENTATION_STATUS: test=catalogScrollSurfaceSpansRightSideOfPhone
+INSTRUMENTATION_STATUS_CODE: -2
+INSTRUMENTATION_STATUS: class=dev.local.opencodecompanion.connected.ConnectedHostTest
+INSTRUMENTATION_STATUS: current=5
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=6
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: test=questionReplyUsesRealPendingRequest
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=dev.local.opencodecompanion.connected.ConnectedHostTest
+INSTRUMENTATION_STATUS: current=5
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=6
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=questionReplyUsesRealPendingRequest
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=dev.local.opencodecompanion.connected.ConnectedHostTest
+INSTRUMENTATION_STATUS: current=6
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=6
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: test=offlineBackgroundForegroundKeepsDurableState
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=dev.local.opencodecompanion.connected.ConnectedHostTest
+INSTRUMENTATION_STATUS: current=6
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=6
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=offlineBackgroundForegroundKeepsDurableState
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_RESULT: stream=
+
+Time: 65,143
+There was 1 failure:
+1) catalogScrollSurfaceSpansRightSideOfPhone(dev.local.opencodecompanion.connected.ConnectedHostTest)
+java.lang.AssertionError: Failed to assert the following: (is enabled)
+Semantics of the node:
+Node #1248 at (l=48.0, t=597.0, r=331.0, b=741.0)px
+Role = 'Button'
+Text = '[New session]'
+[Disabled]
+Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, SetTextSubstitution, ShowTextSubstitution]
+MergeDescendants = 'true'
+Has 5 siblings
+Selector used: (Text + InputText + EditableText contains 'New session' (ignoreCase: false))
+
+	at androidx.compose.ui.test.AssertionsKt.assert(Assertions.kt:264)
+	at androidx.compose.ui.test.AssertionsKt.assert$default(Assertions.kt:254)
+	at androidx.compose.ui.test.AssertionsKt.assertIsEnabled(Assertions.kt:60)
+	at dev.local.opencodecompanion.connected.ConnectedHostTest.catalogScrollSurfaceSpansRightSideOfPhone(ConnectedHostTest.kt:161)
+
+FAILURES!!!
+Tests run: 6,  Failures: 1
+
+
+INSTRUMENTATION_CODE: -1

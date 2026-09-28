@@ -62,7 +62,8 @@ sealed interface MutationResult<out T> {
 class SessionV2Transport private constructor(baseClient: OkHttpClient) {
     constructor() : this(OkHttpClient())
 
-    private val client = V2HttpBoundary.harden(baseClient, finite = true)
+    private val client =
+        V2HttpBoundary.harden(baseClient, lifetime = V2HttpBoundary.Lifetime.FINITE)
 
     internal fun runningCallsForTests(): Int = client.dispatcher.runningCallsCount()
 

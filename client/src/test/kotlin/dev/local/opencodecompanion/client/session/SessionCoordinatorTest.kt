@@ -37,7 +37,11 @@ import dev.local.opencodecompanion.protocol.V2QuestionRequest
 import dev.local.opencodecompanion.protocol.V2RequestCodec
 import dev.local.opencodecompanion.protocol.V2SessionSummary
 import dev.local.opencodecompanion.protocol.VcsFileDiff
+import dev.local.opencodecompanion.protocol.transcript.TranscriptDecode
 import dev.local.opencodecompanion.protocol.transcript.TranscriptPage
+import dev.local.opencodecompanion.protocol.transcript.TranscriptRecord
+import dev.local.opencodecompanion.protocol.transcript.V2Transcript
+import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,12 +49,17 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -373,6 +382,46 @@ class SessionCoordinatorTest {
             assertEquals(2L, store.drafts[draftKey]?.revision)
             assertEquals("ab", coordinator.state.value.draft?.text)
         } finally {
+            coordinator.close()
+        }
+    }
+
+    @Test
+    fun pendingDraftSaveReappearsAfterSwitchingAwayAndBack() = runBlocking {
+        val firstMachine = profile("first")
+        val secondMachine = profile("second")
+        val store = FakeStore(firstMachine, secondMachine)
+        val host = FakeHost()
+        val first = SessionKey(firstMachine.id, SessionId("ses_same"))
+        val second = SessionKey(secondMachine.id, SessionId("ses_same"))
+        store.summaries += ScopedSession(first, summary())
+        store.summaries += ScopedSession(second, summary())
+        val firstDraftKey = DraftKey(first, ProjectKey(firstMachine.id, ProjectId("proj")), "/repo")
+        val gate = CompletableDeferred<Unit>()
+        store.saveGate = gate
+        val coordinator = coordinator(store, host)
+        try {
+            coordinator.initialize()
+            coordinator.selectSession(first)
+            val pending = async { coordinator.saveDraft("new first-machine input") }
+            store.saveStarted.await()
+            coordinator.selectMachine(secondMachine.id)
+            coordinator.selectSession(second)
+            assertNull(coordinator.state.value.draft)
+            coordinator.selectMachine(firstMachine.id)
+            // Selection waits on the same draft lock, so it cannot hydrate a stale row.
+            val reselect = async { coordinator.selectSession(first) }
+            withTimeout(5_000) {
+                coordinator.state.first { it.selectedSession == first && it.draft == null }
+            }
+            gate.complete(Unit)
+            assertEquals(SessionActionResult.Completed, pending.await())
+            assertEquals(SessionActionResult.Completed, reselect.await())
+            assertEquals("new first-machine input", store.drafts[firstDraftKey]?.text)
+            assertEquals(first, coordinator.state.value.selectedSession)
+            assertEquals("new first-machine input", coordinator.state.value.draft?.text)
+        } finally {
+            gate.complete(Unit)
             coordinator.close()
         }
     }
@@ -976,6 +1025,139 @@ class SessionCoordinatorTest {
         }
     }
 
+    @Test
+    fun stalledDurableStreamConvergesThroughHistoryAndIdleRemainsReady() = runBlocking {
+        val profile = profile("first")
+        val key = SessionKey(profile.id, SessionId("ses_same"))
+        val store = FakeStore(profile)
+        val host = FakeHost()
+        val coordinator = coordinator(store, host)
+        try {
+            coordinator.initialize()
+            coordinator.selectSession(key)
+            coordinator.foreground()
+            withTimeout(3_000) { host.durableStarted.await() }
+            host.historyRecords = listOf(admissionRecord(key, 1))
+            withTimeout(5_000) {
+                while (coordinator.state.value.transcript?.lastSequence != 1L) delay(10)
+            }
+            assertEquals(ConnectionState.Ready, coordinator.state.value.connection)
+            assertEquals(1L, store.cursor(key))
+            val reconciled = host.historyCalls.get()
+            withTimeout(5_000) { while (host.historyCalls.get() <= reconciled) delay(10) }
+            assertEquals(ConnectionState.Ready, coordinator.state.value.connection)
+            assertEquals(1, coordinator.state.value.transcript?.seen?.size)
+            assertEquals(0, host.promptCalls)
+        } finally {
+            coordinator.close()
+        }
+    }
+
+    @Test
+    fun failedHistoryReconciliationCannotRemainReadyAndCancelsBothStreams() = runBlocking {
+        val profile = profile("first")
+        val key = SessionKey(profile.id, SessionId("ses_same"))
+        val host = FakeHost()
+        val coordinator = coordinator(FakeStore(profile), host)
+        try {
+            coordinator.initialize()
+            coordinator.selectSession(key)
+            coordinator.foreground()
+            withTimeout(3_000) {
+                host.durableStarted.await()
+                host.globalStarted.await()
+            }
+            host.failHistory = true
+            withTimeout(5_000) {
+                host.durableCancelled.await()
+                host.globalCancelled.await()
+            }
+            assertEquals(
+                ConnectionState.Unavailable(
+                    SessionProblem.Transport(ReadFailure.TransportUnavailable)
+                ),
+                coordinator.state.value.connection,
+            )
+            assertEquals(0, host.promptCalls)
+        } finally {
+            coordinator.close()
+        }
+    }
+
+    @Test
+    fun historyPageAndConcurrentDurableEventCommitOneMonotonicProjection() = runBlocking {
+        val profile = profile("first")
+        val key = SessionKey(profile.id, SessionId("ses_same"))
+        val store = FakeStore(profile)
+        val host = FakeHost()
+        val coordinator = coordinator(store, host)
+        try {
+            coordinator.initialize()
+            coordinator.selectSession(key)
+            coordinator.foreground()
+            withTimeout(3_000) { host.durableStarted.await() }
+            val first = admissionRecord(key, 1)
+            val gate = CompletableDeferred<Unit>()
+            host.historyGate = gate
+            withTimeout(5_000) { host.historyStarted.await() }
+            host.durableFrames.send(DurableFrame(first.rawJson, first.decoded))
+            withTimeout(2_000) { host.durableEmitting.await() }
+            assertNull(withTimeoutOrNull(150) { host.durableEmitted.await() })
+            assertEquals(0L, store.cursor(key))
+            host.historyRecords = listOf(first, admissionRecord(key, 2))
+            gate.complete(Unit)
+            withTimeout(2_000) { host.durableEmitted.await() }
+            withTimeout(5_000) {
+                while (coordinator.state.value.transcript?.lastSequence != 2L) delay(10)
+            }
+            assertEquals(2L, store.cursor(key))
+            assertEquals(listOf(1L, 2L), coordinator.state.value.transcript?.seen?.keys?.toList())
+            assertEquals(ConnectionState.Ready, coordinator.state.value.connection)
+            assertEquals(0, host.promptCalls)
+        } finally {
+            coordinator.close()
+        }
+    }
+
+    @Test
+    fun backgroundCancelsHistoryFetchHoldingJournalLockAndWaitingDurableCommit() = runBlocking {
+        val profile = profile("first")
+        val key = SessionKey(profile.id, SessionId("ses_same"))
+        val host = FakeHost()
+        val coordinator = coordinator(FakeStore(profile), host)
+        try {
+            coordinator.initialize()
+            coordinator.selectSession(key)
+            coordinator.foreground()
+            withTimeout(3_000) {
+                host.durableStarted.await()
+                host.globalStarted.await()
+            }
+            host.historyGate = CompletableDeferred()
+            withTimeout(5_000) { host.historyStarted.await() }
+            val first = admissionRecord(key, 1)
+            host.durableFrames.send(DurableFrame(first.rawJson, first.decoded))
+            withTimeout(2_000) { host.durableEmitting.await() }
+            coordinator.background()
+            withTimeout(2_000) {
+                host.historyCancelled.await()
+                host.durableCancelled.await()
+                host.globalCancelled.await()
+            }
+            assertEquals(ConnectionState.Cached, coordinator.state.value.connection)
+            assertFalse(coordinator.state.value.foreground)
+            assertEquals(0L, coordinator.state.value.transcript?.lastSequence)
+        } finally {
+            coordinator.close()
+        }
+    }
+
+    private fun admissionRecord(key: SessionKey, sequence: Int): TranscriptRecord {
+        val raw =
+            """{"id":"evt_$sequence","type":"session.next.prompt.admitted","durable":{"aggregateID":"${key.sessionId.value}","seq":$sequence,"version":1},"data":{"timestamp":1,"sessionID":"${key.sessionId.value}","messageID":"msg_$sequence","prompt":{"text":"Synthetic"},"delivery":"steer"}}"""
+        return TranscriptRecord(raw, V2Transcript.event(raw, key))
+    }
+
     private fun coordinator(
         store: FakeStore,
         host: FakeHost,
@@ -1147,18 +1329,47 @@ class SessionCoordinatorTest {
             return true
         }
 
-        override suspend fun cursor(key: SessionKey) = 0L
+        private val events = mutableMapOf<SessionKey, java.util.SortedMap<Long, String>>()
 
-        override suspend fun journal(key: SessionKey, after: Long, limit: Int) = emptyList<String>()
+        override suspend fun cursor(key: SessionKey) = events[key]?.keys?.lastOrNull() ?: 0L
+
+        override suspend fun journal(key: SessionKey, after: Long, limit: Int) =
+            events[key].orEmpty().filterKeys { it > after }.values.take(limit)
 
         override suspend fun commitEvents(
             key: SessionKey,
             expectedCursor: Long,
             rawEvents: List<String>,
-        ) = expectedCursor
+        ): Long {
+            val rows = events.getOrPut(key) { sortedMapOf() }
+            val decoded =
+                rawEvents.associateBy {
+                    (V2Transcript.event(it, key) as TranscriptDecode.Supported).event.sequence
+                }
+            val current = if (rows.isEmpty()) 0L else rows.lastKey()
+            check(current == expectedCursor || decoded.all { (seq, raw) -> rows[seq] == raw })
+            for ((sequence, raw) in decoded) {
+                check(rows[sequence] == null || rows[sequence] == raw)
+                rows[sequence] = raw
+            }
+            return if (rows.isEmpty()) 0L else rows.lastKey()
+        }
     }
 
     private inner class FakeHost : SessionHostPort {
+        @Volatile var historyRecords: List<TranscriptRecord> = emptyList()
+        @Volatile var failHistory = false
+        @Volatile var historyGate: CompletableDeferred<Unit>? = null
+        val historyStarted = CompletableDeferred<Unit>()
+        val historyCancelled = CompletableDeferred<Unit>()
+        val historyCalls = AtomicInteger()
+        val durableFrames = Channel<DurableFrame>(Channel.UNLIMITED)
+        val durableStarted = CompletableDeferred<Unit>()
+        val durableEmitting = CompletableDeferred<Unit>()
+        val durableEmitted = CompletableDeferred<Unit>()
+        val globalStarted = CompletableDeferred<Unit>()
+        val durableCancelled = CompletableDeferred<Unit>()
+        val globalCancelled = CompletableDeferred<Unit>()
         var promptCalls = 0
         var interruptCalls = 0
         var questionReplyCalls = 0
@@ -1226,8 +1437,27 @@ class SessionCoordinatorTest {
             directory: String,
         ) = ReadResult.Success(emptyList<VcsFileDiff>())
 
-        override suspend fun history(destination: ReadDestination, key: SessionKey, after: Long) =
-            ReadResult.Success(TranscriptPage(emptyList(), false))
+        override suspend fun history(
+            destination: ReadDestination,
+            key: SessionKey,
+            after: Long,
+        ): ReadResult<TranscriptPage> {
+            historyCalls.incrementAndGet()
+            historyGate?.let {
+                historyStarted.complete(Unit)
+                try {
+                    it.await()
+                } finally {
+                    historyCancelled.complete(Unit)
+                }
+            }
+            val records =
+                historyRecords.filter {
+                    (it.decoded as TranscriptDecode.Supported).event.sequence > after
+                }
+            return if (failHistory) ReadResult.Failure(ReadFailure.TransportUnavailable)
+            else ReadResult.Success(TranscriptPage(records, false))
+        }
 
         override suspend fun permissions(destination: ReadDestination, key: SessionKey) =
             ReadResult.Success(permissionsList)
@@ -1330,11 +1560,36 @@ class SessionCoordinatorTest {
             destination: ReadDestination,
             key: SessionKey,
             after: Long,
-        ): Flow<StreamResult<DurableFrame>> = flow { awaitCancellation() }
+        ): Flow<StreamResult<DurableFrame>> = flow {
+            durableStarted.complete(Unit)
+            try {
+                for (frame in durableFrames) {
+                    durableEmitting.complete(Unit)
+                    emit(
+                        StreamResult.Item(
+                            ReadScope(
+                                destination.machineId,
+                                destination.origin.toString(),
+                                destination.credentialGeneration,
+                            ),
+                            frame,
+                        )
+                    )
+                    durableEmitted.complete(Unit)
+                }
+            } finally {
+                durableCancelled.complete(Unit)
+            }
+        }
 
         override fun global(destination: ReadDestination): Flow<StreamResult<V2GlobalEvent>> =
             flow {
-                awaitCancellation()
+                globalStarted.complete(Unit)
+                try {
+                    awaitCancellation()
+                } finally {
+                    globalCancelled.complete(Unit)
+                }
             }
     }
 }
