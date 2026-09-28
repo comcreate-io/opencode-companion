@@ -594,10 +594,19 @@ class SessionCoordinator(
         return runStorage {
             val summary = mutable.value.sessions.firstOrNull { it.key == key }?.summary
             val draftKey = summary?.draftKey(key)
-            val draft = draftKey?.let { store.draft(it) }
             val transcript = reconstruct(key)
-            if (stamp == epoch)
-                mutable.value = mutable.value.copy(draft = draft, transcript = transcript)
+            if (draftKey != null) {
+                draftLocks
+                    .computeIfAbsent(draftKey) { Mutex() }
+                    .withLock {
+                        val draft = store.draft(draftKey)
+                        if (stamp == epoch)
+                            mutable.value =
+                                mutable.value.copy(draft = draft, transcript = transcript)
+                    }
+            } else if (stamp == epoch) {
+                mutable.value = mutable.value.copy(draft = null, transcript = transcript)
+            }
             if (mutable.value.foreground) foreground() else SessionActionResult.Completed
         }
     }
@@ -620,7 +629,13 @@ class SessionCoordinator(
                                 stamp,
                                 SessionProblem.StorageFailure,
                             )
-                    if (stamp == epoch && mutable.value.selectedSession == key)
+                    if (
+                        mutable.value.selectedSession == key &&
+                            mutable.value.sessions
+                                .firstOrNull { it.key == key }
+                                ?.summary
+                                ?.draftKey(key) == draftKey
+                    )
                         mutable.value = mutable.value.copy(draft = saved)
                     SessionActionResult.Completed
                 }

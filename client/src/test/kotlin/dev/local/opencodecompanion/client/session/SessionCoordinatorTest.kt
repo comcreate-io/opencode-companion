@@ -52,6 +52,7 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -381,6 +382,46 @@ class SessionCoordinatorTest {
             assertEquals(2L, store.drafts[draftKey]?.revision)
             assertEquals("ab", coordinator.state.value.draft?.text)
         } finally {
+            coordinator.close()
+        }
+    }
+
+    @Test
+    fun pendingDraftSaveReappearsAfterSwitchingAwayAndBack() = runBlocking {
+        val firstMachine = profile("first")
+        val secondMachine = profile("second")
+        val store = FakeStore(firstMachine, secondMachine)
+        val host = FakeHost()
+        val first = SessionKey(firstMachine.id, SessionId("ses_same"))
+        val second = SessionKey(secondMachine.id, SessionId("ses_same"))
+        store.summaries += ScopedSession(first, summary())
+        store.summaries += ScopedSession(second, summary())
+        val firstDraftKey = DraftKey(first, ProjectKey(firstMachine.id, ProjectId("proj")), "/repo")
+        val gate = CompletableDeferred<Unit>()
+        store.saveGate = gate
+        val coordinator = coordinator(store, host)
+        try {
+            coordinator.initialize()
+            coordinator.selectSession(first)
+            val pending = async { coordinator.saveDraft("new first-machine input") }
+            store.saveStarted.await()
+            coordinator.selectMachine(secondMachine.id)
+            coordinator.selectSession(second)
+            assertNull(coordinator.state.value.draft)
+            coordinator.selectMachine(firstMachine.id)
+            // Selection waits on the same draft lock, so it cannot hydrate a stale row.
+            val reselect = async { coordinator.selectSession(first) }
+            withTimeout(5_000) {
+                coordinator.state.first { it.selectedSession == first && it.draft == null }
+            }
+            gate.complete(Unit)
+            assertEquals(SessionActionResult.Completed, pending.await())
+            assertEquals(SessionActionResult.Completed, reselect.await())
+            assertEquals("new first-machine input", store.drafts[firstDraftKey]?.text)
+            assertEquals(first, coordinator.state.value.selectedSession)
+            assertEquals("new first-machine input", coordinator.state.value.draft?.text)
+        } finally {
+            gate.complete(Unit)
             coordinator.close()
         }
     }

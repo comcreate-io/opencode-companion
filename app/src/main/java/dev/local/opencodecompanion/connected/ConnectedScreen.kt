@@ -65,7 +65,9 @@ import dev.local.opencodecompanion.CompanionTheme
 import dev.local.opencodecompanion.client.SendState
 import dev.local.opencodecompanion.client.session.ConnectionState
 import dev.local.opencodecompanion.client.session.SessionUiState
+import dev.local.opencodecompanion.client.storage.DraftSnapshot
 import dev.local.opencodecompanion.protocol.MachineId
+import dev.local.opencodecompanion.protocol.SessionKey
 import dev.local.opencodecompanion.protocol.V2CreateSessionCommand
 import dev.local.opencodecompanion.protocol.V2ModelSelection
 import dev.local.opencodecompanion.protocol.V2PermissionReply
@@ -568,10 +570,6 @@ private fun ConversationPage(
     val c = CompanionTheme.colors
     val session = state.sessions.firstOrNull { it.key == state.selectedSession }
     val machine = state.machines.firstOrNull { it.id == state.selectedMachine }
-    var composer by remember(state.selectedSession) { mutableStateOf("") }
-    LaunchedEffect(state.draft?.key, state.draft?.cleared) {
-        state.draft?.let { composer = if (it.cleared) "" else it.text }
-    }
     var expandedTool by remember(state.selectedSession) { mutableStateOf<String?>(null) }
     val rows = remember(state.transcript) { state.timeline() }
     var autoScrolling by remember(state.selectedSession) { mutableStateOf(false) }
@@ -743,43 +741,60 @@ private fun ConversationPage(
                 }
             }
         }
-        Row(
-            Modifier.fillMaxWidth()
-                .background(c.layer1)
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.Bottom,
-        ) {
-            Input(
-                "Message",
-                composer,
-                { value ->
-                    composer = value
-                    viewModel.saveDraft(value)
-                },
-                Modifier.weight(1f).heightIn(max = 120.dp),
-                maxLines = 4,
-            )
-            PrimaryAction(
-                "Send",
-                enabled =
-                    state.connection == ConnectionState.Ready &&
-                        composer.isNotBlank() &&
-                        !state.busy &&
-                        state.draft?.text == composer,
-            ) {
-                viewModel.send()
-            }
-            if (state.selectedSession in state.active)
-                SmallAction(
-                    if (state.selectedSession in state.interrupting) "Stopping" else "Stop",
-                    enabled =
-                        state.connection == ConnectionState.Ready &&
-                            !state.busy &&
-                            state.selectedSession !in state.interrupting,
-                ) {
-                    viewModel.interrupt()
-                }
+        DraftComposer(
+            session = state.selectedSession,
+            draft = state.draft,
+            ready = state.connection == ConnectionState.Ready,
+            busy = state.busy,
+            active = state.selectedSession in state.active,
+            interrupting = state.selectedSession in state.interrupting,
+            onSave = viewModel::saveDraft,
+            onSend = viewModel::send,
+            onInterrupt = viewModel::interrupt,
+        )
+    }
+}
+
+@Composable
+internal fun DraftComposer(
+    session: SessionKey?,
+    draft: DraftSnapshot?,
+    ready: Boolean,
+    busy: Boolean,
+    active: Boolean,
+    interrupting: Boolean,
+    onSave: (String, () -> Unit) -> Unit,
+    onSend: () -> Unit,
+    onInterrupt: () -> Unit,
+) {
+    val c = CompanionTheme.colors
+    var input by remember(session) { mutableStateOf(ComposerDraftState()) }
+    LaunchedEffect(session, draft) { input = input.observe(session, draft) }
+    Row(
+        Modifier.fillMaxWidth().background(c.layer1).padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.Bottom,
+    ) {
+        Input(
+            "Message",
+            input.text,
+            { value ->
+                val edited = input.edit(value)
+                input = edited
+                onSave(value) { input = input.saved(edited.generation) }
+            },
+            Modifier.weight(1f).heightIn(max = 120.dp),
+            maxLines = 4,
+        )
+        PrimaryAction("Send", enabled = input.canSend(session, draft, ready, busy)) {
+            input = input.submit()
+            onSend()
         }
+        if (active)
+            SmallAction(
+                if (interrupting) "Stopping" else "Stop",
+                enabled = ready && !busy && !interrupting,
+                onClick = onInterrupt,
+            )
     }
 }
 

@@ -103,8 +103,8 @@ class ConnectedViewModel(create: (CoroutineScope) -> SessionCoordinator) : ViewM
         act { coordinator.refreshChanges() }
     }
 
-    fun saveDraft(text: String) {
-        act { coordinator.saveDraft(text) }
+    fun saveDraft(text: String, onSaved: () -> Unit) {
+        act(onCompleted = onSaved) { coordinator.saveDraft(text) }
     }
 
     fun send() {
@@ -131,11 +131,14 @@ class ConnectedViewModel(create: (CoroutineScope) -> SessionCoordinator) : ViewM
         act { coordinator.rejectQuestion(request) }
     }
 
-    private fun act(block: suspend () -> SessionActionResult) {
+    private fun act(onCompleted: () -> Unit = {}, block: suspend () -> SessionActionResult) {
         viewModelScope.launch {
             try {
                 when (val result = block()) {
-                    SessionActionResult.Completed -> message.value = null
+                    SessionActionResult.Completed -> {
+                        message.value = null
+                        onCompleted()
+                    }
                     is SessionActionResult.Stopped -> message.value = result.problem.explanation()
                 }
             } catch (cancelled: CancellationException) {
